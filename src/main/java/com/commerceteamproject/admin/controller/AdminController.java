@@ -1,13 +1,13 @@
 package com.commerceteamproject.admin.controller;
 
 import com.commerceteamproject.admin.dto.AdminGetResponse;
+import com.commerceteamproject.admin.dto.AdminUpdateRequest;
+import com.commerceteamproject.admin.dto.AdminUpdateResponse;
 import com.commerceteamproject.admin.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -22,5 +22,14 @@ public class AdminController {
             @PathVariable Long adminId
     ){
         return ResponseEntity.status(HttpStatus.OK).body(adminService.findOne(adminId));
+    }
+
+    // 관리자 정보 수정(이름, 이메일, 비밀번호)
+    @PutMapping("/admins/{adminId}")
+    public ResponseEntity<AdminUpdateResponse> update(
+            @PathVariable Long adminId,
+            @RequestBody AdminUpdateRequest request
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(adminService.update(adminId, request));
     }
 }
