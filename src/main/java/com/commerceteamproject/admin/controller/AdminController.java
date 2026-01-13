@@ -41,4 +41,16 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.OK).body(adminService.pwUpdate(adminId, request));
     }
 
+    // 관리자 삭제 : 특정 관리자를 탈퇴(삭제)시킵니다.
+    @DeleteMapping("/admins/{adminId}")
+    public ResponseEntity<Void> delete(
+            @PathVariable Long adminId,
+            // 슈퍼 관리자 인증(비밀번호) 후 삭제
+            @RequestBody AdminDeleteRequest request
+    ) {
+        adminService.delete(adminId, request);
+        return ResponseEntity.noContent().build();
+    }
+
+
 }

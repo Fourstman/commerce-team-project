@@ -57,4 +57,16 @@ public class AdminService {
                 admin.getPassword()
         );
     }
+
+    // 관리자 삭제 : 특정 관리자를 탈퇴(삭제)시킵니다.
+    public void delete(Long adminId, AdminDeleteRequest request) {
+        Admin schedule = adminRepository.findById(adminId).orElseThrow(
+                () -> new IllegalStateException("해당 관리자 ID가 없음")
+        );
+        // 비밀번호 검증
+        if (!schedule.getPassword().equals(request.getPassword())) {
+            throw new IllegalStateException("비밀번호 불일치");
+        }
+        adminRepository.deleteById(adminId);
+    }
 }
