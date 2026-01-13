@@ -1,8 +1,6 @@
 package com.commerceteamproject.admin.service;
 
-import com.commerceteamproject.admin.dto.AdminGetResponse;
-import com.commerceteamproject.admin.dto.AdminUpdateRequest;
-import com.commerceteamproject.admin.dto.AdminUpdateResponse;
+import com.commerceteamproject.admin.dto.*;
 import com.commerceteamproject.admin.entity.Admin;
 import com.commerceteamproject.admin.repository.AdminRepository;
 import lombok.RequiredArgsConstructor;
@@ -48,5 +46,15 @@ public class AdminService {
         );
     }
 
-
+    // 관리자 비밀번호 수정(이름, 이메일, 비밀번호)
+    @Transactional
+    public AdminPasswordUpdateResponse pwUpdate(Long adminId, AdminPasswordUpdateRequest request) {
+        Admin admin = adminRepository.findById(adminId).orElseThrow(
+                () -> new IllegalStateException("비밀번호 수정할 관리자가 없음?(이런 경우가 나올 수 있나)")
+        );
+        admin.pwUpdate(request.getPassword());
+        return new AdminPasswordUpdateResponse(
+                admin.getPassword()
+        );
+    }
 }

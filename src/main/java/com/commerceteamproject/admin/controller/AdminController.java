@@ -1,8 +1,6 @@
 package com.commerceteamproject.admin.controller;
 
-import com.commerceteamproject.admin.dto.AdminGetResponse;
-import com.commerceteamproject.admin.dto.AdminUpdateRequest;
-import com.commerceteamproject.admin.dto.AdminUpdateResponse;
+import com.commerceteamproject.admin.dto.*;
 import com.commerceteamproject.admin.service.AdminService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -32,4 +30,15 @@ public class AdminController {
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(adminService.update(adminId, request));
     }
+
+    // 관리자 비밀번호 수정(비밀번호)
+    // 아이디, 비밀번호 인증 상태에서 비밀번호 수정
+    @PutMapping("/admins/{adminId}/password")
+    public ResponseEntity<AdminPasswordUpdateResponse> pwUpdate(
+            @PathVariable Long adminId,
+            @RequestBody AdminPasswordUpdateRequest request
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(adminService.pwUpdate(adminId, request));
+    }
+
 }
