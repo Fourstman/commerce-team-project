@@ -5,6 +5,7 @@ import com.commerceteamproject.customer.entity.Customer;
 import com.commerceteamproject.customer.entity.CustomerSortBy;
 import com.commerceteamproject.customer.entity.CustomerSortOrder;
 import com.commerceteamproject.customer.entity.CustomerState;
+import com.commerceteamproject.customer.exception.CustomerNotFoundException;
 import com.commerceteamproject.customer.repository.CustomerRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -59,7 +60,7 @@ public class CustomerService {
     @Transactional(readOnly = true)
     public GetCustomerResponse findOne(Long customerId) {
         Customer customer = customerRepository.findById(customerId).orElseThrow(
-                () -> new IllegalStateException("존재하지 않는 회원입니다.")
+                () -> new CustomerNotFoundException("존재하지 않는 고객입니다.")
         );
         return new GetCustomerResponse(
                 customer.getName(),
@@ -74,7 +75,7 @@ public class CustomerService {
     @Transactional
     public UpdateCustomerInformationResponse updateInformation(Long customerId, @Valid UpdateCustomerInformationRequest request) {
         Customer customer = customerRepository.findById(customerId).orElseThrow(
-                () -> new IllegalStateException("존재하지 않는 회원입니다.")
+                () -> new CustomerNotFoundException("존재하지 않는 고객입니다.")
         );
         customer.updateInformation(request);
         return new UpdateCustomerInformationResponse(
@@ -88,7 +89,7 @@ public class CustomerService {
     @Transactional
     public UpdateCustomerStateResponse updateState(Long customerId, @Valid UpdateCustomerStateRequest request) {
         Customer customer = customerRepository.findById(customerId).orElseThrow(
-                () -> new IllegalStateException("존재하지 않는 회원입니다.")
+                () -> new CustomerNotFoundException("존재하지 않는 고객입니다.")
         );
         customer.updateState(request);
         return new UpdateCustomerStateResponse(
@@ -101,7 +102,7 @@ public class CustomerService {
     @Transactional
     public void delete(Long customerId) {
         Customer customer = customerRepository.findById(customerId).orElseThrow(
-                () -> new IllegalStateException("존재하지 않는 회원입니다.")
+                () -> new CustomerNotFoundException("존재하지 않는 고객입니다.")
         );
         customerRepository.deleteById(customerId);
     }

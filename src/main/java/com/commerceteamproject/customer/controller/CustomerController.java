@@ -6,6 +6,8 @@ import com.commerceteamproject.customer.dto.*;
 import com.commerceteamproject.customer.entity.CustomerSortBy;
 import com.commerceteamproject.customer.entity.CustomerSortOrder;
 import com.commerceteamproject.customer.entity.CustomerState;
+import com.commerceteamproject.customer.exception.AccessDeniedException;
+import com.commerceteamproject.customer.exception.LoginRequiredException;
 import com.commerceteamproject.customer.service.CustomerService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -37,12 +39,12 @@ public class CustomerController {
             HttpSession session
     ) {
         if (sessionAdmin == null) {
-            return ResponseEntity.badRequest().build();
+            throw new LoginRequiredException("로그인이 필요합니다.");
         }
 
         AdminRole role = sessionAdmin.getAdminRole();
         if (role != AdminRole.SUPER && role != AdminRole.RUN) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            throw new AccessDeniedException("권한이 없습니다.");
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(customerService.findAll(
@@ -58,12 +60,12 @@ public class CustomerController {
             HttpSession session
     ) {
         if (sessionAdmin == null) {
-            return ResponseEntity.badRequest().build();
+            throw new LoginRequiredException("로그인이 필요합니다.");
         }
 
         AdminRole role = sessionAdmin.getAdminRole();
         if (role != AdminRole.SUPER && role != AdminRole.RUN) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            throw new AccessDeniedException("권한이 없습니다.");
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(customerService.findOne(customerId));
@@ -78,12 +80,12 @@ public class CustomerController {
             HttpSession session
     ) {
         if (sessionAdmin == null) {
-            return ResponseEntity.badRequest().build();
+            throw new LoginRequiredException("로그인이 필요합니다.");
         }
 
         AdminRole role = sessionAdmin.getAdminRole();
         if (role != AdminRole.SUPER && role != AdminRole.RUN) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            throw new AccessDeniedException("권한이 없습니다.");
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(customerService.updateInformation(customerId, request));
@@ -98,12 +100,12 @@ public class CustomerController {
             HttpSession session
     ) {
         if (sessionAdmin == null) {
-            return ResponseEntity.badRequest().build();
+            throw new LoginRequiredException("로그인이 필요합니다.");
         }
 
         AdminRole role = sessionAdmin.getAdminRole();
         if (role != AdminRole.SUPER && role != AdminRole.RUN) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            throw new AccessDeniedException("권한이 없습니다.");
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(customerService.updateState(customerId, request));
@@ -117,12 +119,12 @@ public class CustomerController {
             HttpSession session
     ) {
         if (sessionAdmin == null) {
-            return ResponseEntity.badRequest().build();
+            throw new LoginRequiredException("로그인이 필요합니다.");
         }
 
         AdminRole role = sessionAdmin.getAdminRole();
         if (role != AdminRole.SUPER) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            throw new AccessDeniedException("권한이 없습니다.");
         }
 
         customerService.delete(customerId);
