@@ -43,10 +43,22 @@ public class ProductService {
         List<Product> products;
         List<ProductGetResponse> dtos = new ArrayList<>();
 
+        boolean sortByPrice ="price".equals(category);
+
         if (category != null && !category.isEmpty()) {
-            products = productRepository.findAllByCategoryOrderByModifiedAtDesc(category);
+            if (sortByPrice) {
+                products = productRepository
+                        .findAllByCategoryOrderByPriceDesc(category);
+            } else {
+                products = productRepository
+                        .findAllByCategoryOrderByModifiedAtDesc(category);
+            }
         } else {
-            products = productRepository.findAllByOrderByModifiedAtDesc();
+            if (sortByPrice) {
+                products = productRepository.findAllByOrderByPriceDesc();
+            } else {
+                products = productRepository.findAllByOrderByModifiedAtDesc();
+            }
         }
 
         for(Product product : products) {
