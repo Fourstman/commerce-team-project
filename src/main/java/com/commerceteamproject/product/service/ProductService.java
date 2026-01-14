@@ -45,7 +45,7 @@ public class ProductService {
 
         boolean sortByPrice ="price".equals(category);
 
-        if (category != null && !category.isEmpty()) {
+        if (category != null && !category.isEmpty()) { // 내림차순
             if (sortByPrice) {
                 products = productRepository
                         .findAllByCategoryOrderByPriceDesc(category);
@@ -54,7 +54,7 @@ public class ProductService {
                         .findAllByCategoryOrderByModifiedAtDesc(category);
             }
         } else {
-            if (sortByPrice) {
+            if (sortByPrice) { // 가격 순서
                 products = productRepository.findAllByOrderByPriceDesc();
             } else {
                 products = productRepository.findAllByOrderByModifiedAtDesc();
