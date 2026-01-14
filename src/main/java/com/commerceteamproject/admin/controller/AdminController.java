@@ -21,14 +21,14 @@ public class AdminController {
     private final AdminService adminService;
 
     // 회원가입
-    @PostMapping("/signup")
+    @PostMapping("/admins/signup")
     public ResponseEntity<SaveAdminResponse> saveAdmin(
             @Valid @RequestBody SaveAdminRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(adminService.save(request));
     }
 
     // 로그인
-    @PostMapping("/login")
+    @PostMapping("/admins/login")
     public ResponseEntity<String> login(
             @Valid @RequestBody LoginRequest request, HttpSession session) {
         SessionAdmin sessionAdmin = adminService.login(request);
@@ -37,7 +37,7 @@ public class AdminController {
     }
 
     // 로그아웃
-    @PostMapping("/logout")
+    @PostMapping("/admins/logout")
     public ResponseEntity<Void> logout(
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin, HttpSession session) {
         if (sessionAdmin == null) {
