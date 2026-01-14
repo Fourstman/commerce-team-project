@@ -1,10 +1,14 @@
 package com.commerceteamproject.admin.service;
 
+import com.commerceteamproject.admin.dto.LoginRequest;
 import com.commerceteamproject.admin.dto.SaveAdminRequest;
 import com.commerceteamproject.admin.dto.SaveAdminResponse;
+import com.commerceteamproject.admin.dto.SessionAdmin;
 import com.commerceteamproject.admin.enitity.Admin;
+import com.commerceteamproject.admin.enitity.AdminStatus;
 import com.commerceteamproject.admin.repository.AdminRepository;
 import com.commerceteamproject.config.PasswordEncoder;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -39,6 +43,28 @@ public class AdminService {
                 savedAdmin.getAdminRole(),
                 savedAdmin.getAdminStatus(),
                 savedAdmin.getCreatedAt()
+        );
+    }
+
+    @Transactional
+    public SessionAdmin login(@Valid LoginRequest request) {
+        Admin admin = adminRepository.findByEmail(request.getEmail()).orElseThrow(
+                () -> new IllegalStateException("등록되지 않은 이메일입니다.")
+        );
+        boolean isPasswordMatch = passwordEncoder.matches(request.getPassword(), admin.getPassword());
+        if (!isPasswordMatch) {
+            throw new IllegalStateException("비밀번호가 일치하지 않습니다.");
+        }
+        switch (admin.getAdminStatus()) {
+            case INACTIVATION -> throw new IllegalStateException("비활성화된 계정입니다.");
+            case SUSPENSION -> throw new IllegalStateException("정지된 계정입니다.");
+            case PENDING -> throw new IllegalStateException("승인대기 상태입니다. 슈퍼관리자의 승인이 필요합니다.");
+            case REJECTION -> throw new IllegalStateException("승인거부된 계정입니다.");
+        }
+        return new SessionAdmin(
+                admin.getId(),
+                admin.getEmail(),
+                admin.getAdminRole()
         );
     }
 }

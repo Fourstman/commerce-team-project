@@ -1,8 +1,11 @@
 package com.commerceteamproject.admin.controller;
 
+import com.commerceteamproject.admin.dto.LoginRequest;
 import com.commerceteamproject.admin.dto.SaveAdminRequest;
 import com.commerceteamproject.admin.dto.SaveAdminResponse;
+import com.commerceteamproject.admin.dto.SessionAdmin;
 import com.commerceteamproject.admin.service.AdminService;
+import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -21,5 +24,14 @@ public class AdminController {
     public ResponseEntity<SaveAdminResponse> saveAdmin(
             @Valid @RequestBody SaveAdminRequest request) {
         return ResponseEntity.status(HttpStatus.CREATED).body(adminService.save(request));
+    }
+
+    // 로그인
+    @PostMapping("/login")
+    public ResponseEntity<String> login(
+            @Valid @RequestBody LoginRequest request, HttpSession session) {
+        SessionAdmin sessionAdmin = adminService.login(request);
+        session.setAttribute("loginAdmin", sessionAdmin);
+        return ResponseEntity.status(HttpStatus.OK).body("성공적으로 로그인되었습니다");
     }
 }
