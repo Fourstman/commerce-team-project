@@ -2,10 +2,16 @@ package com.commerceteamproject.product.service;
 
 import com.commerceteamproject.product.dto.ProductCreateResponse;
 import com.commerceteamproject.product.dto.ProductCreateRquest;
+import com.commerceteamproject.product.dto.ProductGetResponse;
 import com.commerceteamproject.product.entity.Product;
 import com.commerceteamproject.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -33,5 +39,47 @@ public class ProductService {
                 saveproduct.getStatus()
         );
 
+    }
+    @Transactional(readOnly = true)
+    public List<ProductGetResponse> getAll(String category) {
+        List<Product> products;
+        List<ProductGetResponse> dtos = new ArrayList<>();
+
+        if (category != null && !category.isEmpty()) {
+            products = productRepository.findAllByCategoryOrderByModifiedAtDesc(category);
+        } else {
+            products = productRepository.findAllByOrderModifiedAtDesc();
+        }
+
+        for(Product product : products) {
+            ProductGetResponse productGetResponse = new ProductGetResponse(
+                    product.getId(),
+                    product.getName(),
+                    product.getCategory(),
+                    product.getPrice(),
+                    product.getStock(),
+                    product.getDescription(),
+                    product.getStatus()
+            );
+            dtos.add(productGetResponse);
+        }
+        return dtos;
+    }
+
+    @Transactional
+    public ProductGetResponse getById(Long productId) {
+        Product product = productRepository.findById(productId).orElseThrow(
+                () -> new IllegalArgumentException("없는 상품 입니다.")
+        );
+
+        return new ProductGetResponse(
+                product.getId(),
+                product.getName(),
+                product.getCategory(),
+                product.getPrice(),
+                product.getStock(),
+                product.getDescription(),
+                product.getStatus()
+        );
     }
 }
