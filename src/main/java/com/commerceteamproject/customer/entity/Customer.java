@@ -21,9 +21,11 @@ public class Customer extends BaseEntity {
     private String name;
     private String email;
     private String phone;
-    private String state;
 
-    public Customer(String name, String email, String phone, String state) {
+    @Enumerated(EnumType.STRING)
+    private CustomerState state;
+
+    public Customer(String name, String email, String phone, CustomerState state) {
         this.name = name;
         this.email = email;
         this.phone = phone;
@@ -37,6 +39,6 @@ public class Customer extends BaseEntity {
     }
 
     public void updateState(@Valid UpdateCustomerStateRequest request) {
-        this.state = request.getState();
+        this.state = CustomerState.fromDescription(request.getState());
     }
 }

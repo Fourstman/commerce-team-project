@@ -6,9 +6,6 @@ import com.commerceteamproject.customer.repository.CustomerRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -35,7 +32,7 @@ public class CustomerService {
                 customer.getName(),
                 customer.getEmail(),
                 customer.getPhone(),
-                customer.getState(),
+                customer.getState().getDescription(),
                 customer.getCreatedAt()
         );
     }
@@ -63,7 +60,7 @@ public class CustomerService {
         customer.updateState(request);
         return new UpdateCustomerStateResponse(
                 customer.getName(),
-                customer.getState()
+                customer.getState().getDescription()
         );
     }
 
