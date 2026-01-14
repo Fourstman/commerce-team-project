@@ -18,12 +18,12 @@ public class CustomerController {
 
     // 고객 리스트 조회
     @GetMapping
-    public ResponseEntity<Page<GetCustomerListResponse>> findAll(
+    public ResponseEntity<PageResponse<GetCustomerListResponse>> findAll(
             @RequestParam(required = false) String keyword,
-            @RequestParam(defaultValue = "0") int pageNum,
+            @RequestParam(defaultValue = "1") int pageNum,
             @RequestParam(defaultValue = "10") int pageSize,
             @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "desc") String sortOrder,
+            @RequestParam(required = false) String sortOrder,
             @RequestParam(required = false) String state
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(customerService.findAll(

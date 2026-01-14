@@ -2,6 +2,7 @@ package com.commerceteamproject.customer.service;
 
 import com.commerceteamproject.customer.dto.*;
 import com.commerceteamproject.customer.entity.Customer;
+import com.commerceteamproject.customer.entity.CustomerState;
 import com.commerceteamproject.customer.repository.CustomerRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,25 +19,36 @@ public class CustomerService {
 
     private final CustomerRepository customerRepository;
 
-    // TODO
     // 고객 리스트 조회
     @Transactional(readOnly = true)
-    public Page<GetCustomerListResponse> findAll(String keyword, int pageNum, int pageSize, String sortBy, String sortOrder, String state) {
+    public PageResponse<GetCustomerListResponse> findAll(String keyword, int pageNum, int pageSize, String sortBy, String sortOrder, String state) {
+
+        // 정렬 기준이 가입일이면 내림차순 정렬, 그 외엔 오름차순 정렬
+        if (sortOrder == null || sortOrder.isBlank()) {
+            if (sortBy.equals("createdAt")) {
+                sortOrder = "desc";
+            } else {
+                sortOrder = "asc";
+            }
+        }
 
         // 정렬 및 페이징 조건 설정
         Sort.Direction direction = Sort.Direction.fromString(sortOrder);
         Sort sort = Sort.by(direction, sortBy);
-        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+        Pageable pageable = PageRequest.of(pageNum - 1, pageSize, sort);
 
-        // 키워드가 있으면 키워드가 포함된 이름/이메일 검색
-        Page<Customer> customers;
-        if (keyword != null && !keyword.isBlank()) {
-            customers = customerRepository.findByNameContainingOrEmailContaining(keyword, keyword, pageable);
-        } else {
-            customers = customerRepository.findAll(pageable);
+        // String state를 ENUM으로 변환
+        CustomerState stateEnum = null;
+        if (state != null && !state.isBlank()) {
+            stateEnum = CustomerState.fromDescription(state);
         }
 
-        return customers.map(customer -> new GetCustomerListResponse(
+        // 키워드가 있으면 키워드가 포함된 이름/이메일 검색
+        // 상태가 있으면 상태 기준으로 필터링
+        // 키워드/상태가 없으면 전체 조회
+        Page<Customer> customers = customerRepository.findByKeywordAndState(keyword, stateEnum, pageable);
+
+        Page<GetCustomerListResponse> page = customers.map(customer -> new GetCustomerListResponse(
                 customer.getId(),
                 customer.getName(),
                 customer.getEmail(),
@@ -44,6 +56,7 @@ public class CustomerService {
                 customer.getState().getDescription(),
                 customer.getCreatedAt()
         ));
+        return new PageResponse<>(page);
     }
 
     // 고객 상세 조회
