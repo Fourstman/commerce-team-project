@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.SessionAttribute;
 
 @RestController
 @RequiredArgsConstructor
@@ -33,5 +34,16 @@ public class AdminController {
         SessionAdmin sessionAdmin = adminService.login(request);
         session.setAttribute("loginAdmin", sessionAdmin);
         return ResponseEntity.status(HttpStatus.OK).body("성공적으로 로그인되었습니다");
+    }
+
+    // 로그아웃
+    @PostMapping("/logout")
+    public ResponseEntity<Void> logout(
+            @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin, HttpSession session) {
+        if (sessionAdmin == null) {
+            return ResponseEntity.badRequest().build();
+        }
+        session.invalidate();
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
