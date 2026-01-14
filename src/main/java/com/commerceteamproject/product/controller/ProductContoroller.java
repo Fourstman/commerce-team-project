@@ -1,8 +1,6 @@
 package com.commerceteamproject.product.controller;
 
-import com.commerceteamproject.product.dto.ProductCreateResponse;
-import com.commerceteamproject.product.dto.ProductCreateRquest;
-import com.commerceteamproject.product.dto.ProductGetResponse;
+import com.commerceteamproject.product.dto.*;
 import com.commerceteamproject.product.entity.Product;
 import com.commerceteamproject.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
@@ -18,7 +16,7 @@ public class ProductContoroller {
 
     private final ProductService productService;
 
-    @PostMapping("/products")
+    @PostMapping("/products") // 상품 생성 > products로 생성
     public ResponseEntity<ProductCreateResponse> create (
             @RequestBody ProductCreateRquest request
     ) {
@@ -27,7 +25,7 @@ public class ProductContoroller {
 
     }
 
-    @GetMapping("/products")
+    @GetMapping("/products") // 상품 전체 조화 > products로 조회
     public ResponseEntity<List<ProductGetResponse>> getAll (
             @RequestBody(required = false) String category
     ) {
@@ -36,11 +34,19 @@ public class ProductContoroller {
 
     }
 
-    @GetMapping("/products/{productsId}")
+    @GetMapping("/products/{productsId}") // 상품 단건 조회 > products / productsId
     public ResponseEntity<ProductGetResponse> getById (
             @PathVariable Long productsId
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(productService.getById(productsId));
+    }
+
+    @PutMapping("/products/{productsId}")
+    public ResponseEntity<ProductUpdateResponse> update (
+            @RequestBody ProductUpdateRequest request,
+            @PathVariable Long productsId
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(productService.update(productsId, request));
     }
 
 }

@@ -1,0 +1,14 @@
+package com.commerceteamproject.product.dto;
+
+import lombok.Getter;
+
+@Getter
+public class ProductUpdateRequest {
+    private String name;
+    private String category;
+    private int price;
+    private int stock;
+    private String description;
+    private String status;
+}
+

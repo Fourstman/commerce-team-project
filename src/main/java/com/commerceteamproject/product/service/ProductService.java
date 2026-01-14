@@ -1,8 +1,6 @@
 package com.commerceteamproject.product.service;
 
-import com.commerceteamproject.product.dto.ProductCreateResponse;
-import com.commerceteamproject.product.dto.ProductCreateRquest;
-import com.commerceteamproject.product.dto.ProductGetResponse;
+import com.commerceteamproject.product.dto.*;
 import com.commerceteamproject.product.entity.Product;
 import com.commerceteamproject.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -73,6 +71,23 @@ public class ProductService {
         );
 
         return new ProductGetResponse(
+                product.getId(),
+                product.getName(),
+                product.getCategory(),
+                product.getPrice(),
+                product.getStock(),
+                product.getDescription(),
+                product.getStatus()
+        );
+    }
+
+    @Transactional
+    public ProductUpdateResponse update(Long productsId, ProductUpdateRequest request) { //
+        Product product = productRepository.findById(productsId).orElseThrow(
+                () -> new IllegalArgumentException(" 없는 상품 입니다.")
+        );
+        product.update(request.getName(), request.getCategory(), request.getPrice(), request.getStock(), request.getDescription(),request.getStatus());
+        return new ProductUpdateResponse(
                 product.getId(),
                 product.getName(),
                 product.getCategory(),
