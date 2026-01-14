@@ -46,7 +46,7 @@ public class ProductService {
         if (category != null && !category.isEmpty()) {
             products = productRepository.findAllByCategoryOrderByModifiedAtDesc(category);
         } else {
-            products = productRepository.findAllByOrderModifiedAtDesc();
+            products = productRepository.findAllByOrderByModifiedAtDesc();
         }
 
         for(Product product : products) {
