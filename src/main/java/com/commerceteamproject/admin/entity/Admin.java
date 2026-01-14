@@ -59,7 +59,13 @@ public class Admin extends BaseEntity {
     // 관리자 역할 변경
     public void changeRole(AdminRole adminRole) {
         this.adminRole = adminRole;
-        this.adminStatus = AdminStatus.PENDING;
+        this.adminStatus = AdminStatus.ACTIVATION;
+    }
+
+    public void updateOwn(String name, String email, String phoneNumber) {
+        this.name = name;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
     }
 
     // 관리자 상태 변경

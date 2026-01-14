@@ -169,4 +169,12 @@ public class AdminController {
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin) {
         return ResponseEntity.status(HttpStatus.OK).body(adminService.findOwn(sessionAdmin));
     }
+
+    // 내 프로필 수정
+    @PatchMapping("/admins/profiles")
+    public ResponseEntity<UpdateOwnAdminResponse> updateOwnAdmin(
+            @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin,
+            @RequestBody UpdateOwnAdminRequest request) {
+        return ResponseEntity.status(HttpStatus.OK).body(adminService.updateOwn(sessionAdmin, request));
+    }
 }
