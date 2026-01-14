@@ -29,11 +29,11 @@ public class AdminController {
 
     // 로그인
     @PostMapping("/admins/login")
-    public ResponseEntity<String> login(
+    public ResponseEntity<Void> login(
             @Valid @RequestBody LoginRequest request, HttpSession session) {
         SessionAdmin sessionAdmin = adminService.login(request);
         session.setAttribute("loginAdmin", sessionAdmin);
-        return ResponseEntity.status(HttpStatus.OK).body("성공적으로 로그인되었습니다");
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     // 로그아웃

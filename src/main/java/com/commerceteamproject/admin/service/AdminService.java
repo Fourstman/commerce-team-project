@@ -5,7 +5,6 @@ import com.commerceteamproject.admin.dto.SaveAdminRequest;
 import com.commerceteamproject.admin.dto.SaveAdminResponse;
 import com.commerceteamproject.admin.dto.SessionAdmin;
 import com.commerceteamproject.admin.enitity.Admin;
-import com.commerceteamproject.admin.enitity.AdminStatus;
 import com.commerceteamproject.admin.repository.AdminRepository;
 import com.commerceteamproject.config.PasswordEncoder;
 import jakarta.validation.Valid;
