@@ -8,7 +8,7 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
     // 기본 최신순
-    List<Product> findAllByCategoryOrderByModifiedAtDesc(String author);
+    List<Product> findAllByCategoryOrderByModifiedAtDesc(String category);
     List<Product> findAllByOrderByModifiedAtDesc();
 
     // 가격 순서
