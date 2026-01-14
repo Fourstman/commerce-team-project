@@ -1,11 +1,32 @@
 package com.commerceteamproject.admin.service;
 
+import com.commerceteamproject.admin.dto.SaveAdminRequest;
+import com.commerceteamproject.admin.enitity.Admin;
 import com.commerceteamproject.admin.repository.AdminRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
 public class AdminService {
     private final AdminRepository adminRepository;
+
+    @Transactional
+    public Admin save(SaveAdminRequest request) {
+        boolean existence = adminRepository.existsByEmail(request.getEmail());
+        if (existence) {
+            throw new IllegalStateException("중복된 이메일이 존재합니다.");
+        } else if (request.getAdminRole() == null) {
+            throw new IllegalStateException("관리자 역할을 선택해주세요.");
+        }
+        Admin admin = new Admin(
+                request.getName(),
+                request.getEmail(),
+                request.getPassword(),
+                request.getPhoneNumber(),
+                request.getAdminRole()
+        );
+        return adminRepository.save(admin);
+    }
 }
