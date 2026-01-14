@@ -6,6 +6,9 @@ import com.commerceteamproject.customer.repository.CustomerRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,7 +22,28 @@ public class CustomerService {
     // 고객 리스트 조회
     @Transactional(readOnly = true)
     public Page<GetCustomerListResponse> findAll(String keyword, int pageNum, int pageSize, String sortBy, String sortOrder, String state) {
-        return null;
+
+        // 정렬 및 페이징 조건 설정
+        Sort.Direction direction = Sort.Direction.fromString(sortOrder);
+        Sort sort = Sort.by(direction, sortBy);
+        Pageable pageable = PageRequest.of(pageNum, pageSize, sort);
+
+        // 키워드가 있으면 키워드가 포함된 이름/이메일 검색
+        Page<Customer> customers;
+        if (keyword != null && !keyword.isBlank()) {
+            customers = customerRepository.findByNameContainingOrEmailContaining(keyword, keyword, pageable);
+        } else {
+            customers = customerRepository.findAll(pageable);
+        }
+
+        return customers.map(customer -> new GetCustomerListResponse(
+                customer.getId(),
+                customer.getName(),
+                customer.getEmail(),
+                customer.getPhone(),
+                customer.getState().getDescription(),
+                customer.getCreatedAt()
+        ));
     }
 
     // 고객 상세 조회

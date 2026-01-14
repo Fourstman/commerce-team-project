@@ -16,11 +16,19 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
-    // TODO
     // 고객 리스트 조회
     @GetMapping
-    public ResponseEntity<Page<GetCustomerListResponse>> findAll() {
-        return null;
+    public ResponseEntity<Page<GetCustomerListResponse>> findAll(
+            @RequestParam(required = false) String keyword,
+            @RequestParam(defaultValue = "0") int pageNum,
+            @RequestParam(defaultValue = "10") int pageSize,
+            @RequestParam(defaultValue = "createdAt") String sortBy,
+            @RequestParam(defaultValue = "desc") String sortOrder,
+            @RequestParam(required = false) String state
+    ) {
+        return ResponseEntity.status(HttpStatus.OK).body(customerService.findAll(
+                keyword, pageNum, pageSize, sortBy, sortOrder, state
+        ));
     }
 
     // 고객 상세 조회
