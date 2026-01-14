@@ -226,4 +226,16 @@ public class AdminService {
         return new AdminPasswordUpdateResponse(admin.getPassword());
     }
 
+
+    @Transactional
+    public FindOwnAdminResponse findOwn(SessionAdmin sessionAdmin) {
+        Admin admin = adminRepository.findById(sessionAdmin.getId()).orElseThrow(
+                () -> new IllegalStateException("존재하지 않는 관리자입니다.")
+        );
+        return new FindOwnAdminResponse(
+                admin.getName(),
+                admin.getEmail(),
+                admin.getPhoneNumber()
+        );
+    }
 }

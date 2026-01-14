@@ -1,6 +1,7 @@
 package com.commerceteamproject.admin.controller;
 
 import com.commerceteamproject.admin.dto.*;
+import com.commerceteamproject.admin.dto.*;
 import com.commerceteamproject.admin.entity.AdminRole;
 import com.commerceteamproject.admin.service.AdminService;
 import jakarta.servlet.http.HttpSession;
@@ -106,13 +107,13 @@ public class AdminController {
         if (loginAdmin == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-    
+
         // 일반관리자(RUN, CS)는 권한 없음
         if (loginAdmin.getAdminRole() != AdminRole.SUPER) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(null); // "접근 권한이 없습니다"
         }
-    
+
         return ResponseEntity.ok(adminService.approve(adminId));
     }
 
@@ -160,5 +161,12 @@ public class AdminController {
             @Valid @RequestBody AdminPasswordUpdateRequest request
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(adminService.pwUpdate(adminId, request));
+    }
+
+    // 내 프로필 조회
+    @GetMapping("/admins/profiles")
+    public ResponseEntity<FindOwnAdminResponse> findOwnAdmin(
+            @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin) {
+        return ResponseEntity.status(HttpStatus.OK).body(adminService.findOwn(sessionAdmin));
     }
 }
