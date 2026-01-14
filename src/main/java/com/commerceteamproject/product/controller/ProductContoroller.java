@@ -26,9 +26,10 @@ public class ProductContoroller {
 
     @GetMapping("/products") // 상품 전체 조화 > products로 조회
     public ResponseEntity<List<ProductGetResponse>> getAll (
-            @RequestParam(required = false) String category
+            @RequestParam(required = false) String category,
+            @RequestParam(required = false) String sort
     ) {
-        List<ProductGetResponse> products = productService.getAll(category);
+        List<ProductGetResponse> products = productService.getAll(category, sort);
         return ResponseEntity.status(HttpStatus.OK).body(products);
 
     }

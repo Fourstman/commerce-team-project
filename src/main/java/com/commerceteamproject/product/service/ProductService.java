@@ -4,7 +4,6 @@ import com.commerceteamproject.product.dto.*;
 import com.commerceteamproject.product.entity.Product;
 import com.commerceteamproject.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
-import org.jspecify.annotations.Nullable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,23 +38,26 @@ public class ProductService {
 
     }
     @Transactional(readOnly = true)
-    public List<ProductGetResponse> getAll(String category) {
+    public List<ProductGetResponse> getAll(String category, String sort) {
         List<Product> products;
         List<ProductGetResponse> dtos = new ArrayList<>();
 
-        boolean sortByPrice ="price".equals(category);
+        boolean sortByPrice ="price".equals(sort);
+        boolean sortByStock ="stock".equals(sort);
 
-        if (category != null && !category.isEmpty()) { // 기본 최신순서
+        if (category != null && !category.isEmpty()) {
             if (sortByPrice) {
-                products = productRepository
-                        .findAllByCategoryOrderByPriceDesc(category);
+                products = productRepository.findAllByCategoryOrderByPriceDesc(category);
+            } else if (sortByStock) {
+                products = productRepository.findAllByCategoryOrderByStockDesc(category);
             } else {
-                products = productRepository
-                        .findAllByCategoryOrderByModifiedAtDesc(category);
+                products = productRepository.findAllByCategoryOrderByModifiedAtDesc(category);
             }
         } else {
-            if (sortByPrice) { // 가격 순서
+            if (sortByPrice) {
                 products = productRepository.findAllByOrderByPriceDesc();
+            } else if (sortByStock) {
+                products = productRepository.findAllByOrderByStockDesc();
             } else {
                 products = productRepository.findAllByOrderByModifiedAtDesc();
             }

@@ -14,4 +14,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     // 가격 순서
     List<Product> findAllByOrderByPriceDesc();
     List<Product> findAllByCategoryOrderByPriceDesc(String category);
+
+    // 재고 순서
+    List<Product> findAllByOrderByStockDesc();
+    List<Product> findAllByCategoryOrderByStockDesc(String category);
 }
