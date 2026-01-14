@@ -39,6 +39,6 @@ public class Customer extends BaseEntity {
     }
 
     public void updateState(@Valid UpdateCustomerStateRequest request) {
-        this.state = CustomerState.fromDescription(request.getState());
+        this.state = request.getState();
     }
 }

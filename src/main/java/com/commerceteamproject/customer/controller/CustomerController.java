@@ -3,17 +3,23 @@ package com.commerceteamproject.customer.controller;
 import com.commerceteamproject.admin.dto.SessionAdmin;
 import com.commerceteamproject.admin.enitity.AdminRole;
 import com.commerceteamproject.customer.dto.*;
+import com.commerceteamproject.customer.entity.CustomerSortBy;
+import com.commerceteamproject.customer.entity.CustomerSortOrder;
+import com.commerceteamproject.customer.entity.CustomerState;
 import com.commerceteamproject.customer.service.CustomerService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/customers")
 @RestController
 @RequiredArgsConstructor
+@Validated
 public class CustomerController {
 
     private final CustomerService customerService;
@@ -22,11 +28,11 @@ public class CustomerController {
     @GetMapping
     public ResponseEntity<PageResponse<GetCustomerListResponse>> findAll(
             @RequestParam(required = false) String keyword,
-            @RequestParam(defaultValue = "1") int pageNum,
-            @RequestParam(defaultValue = "10") int pageSize,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(required = false) String sortOrder,
-            @RequestParam(required = false) String state,
+            @RequestParam(defaultValue = "1") @Positive int pageNum,
+            @RequestParam(defaultValue = "10") @Positive int pageSize,
+            @RequestParam(defaultValue = "createdAt") CustomerSortBy sortBy,
+            @RequestParam(required = false) CustomerSortOrder sortOrder,
+            @RequestParam(required = false) CustomerState state,
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin,
             HttpSession session
     ) {

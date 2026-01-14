@@ -19,13 +19,4 @@ public enum CustomerState {
     public String toString() {
         return this.description;
     }
-
-    public static CustomerState fromDescription(String description) {
-        for (CustomerState state : values()) {
-            if (state.description.equals(description)) {
-                return state;
-            }
-        }
-        throw new IllegalStateException("잘못된 상태값입니다.");
-    }
 }
