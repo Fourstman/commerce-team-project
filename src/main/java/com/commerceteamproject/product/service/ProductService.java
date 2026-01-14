@@ -97,4 +97,12 @@ public class ProductService {
                 product.getStatus()
         );
     }
+
+    public void delete(Long productsId) {
+        boolean existence = productRepository.existsById(productsId);
+        if (!existence) {
+            throw new IllegalArgumentException("없는 상품 입니다.");
+        }
+        productRepository.deleteById(productsId);
+    }
 }

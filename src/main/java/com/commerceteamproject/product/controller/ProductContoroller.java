@@ -41,12 +41,17 @@ public class ProductContoroller {
         return ResponseEntity.status(HttpStatus.OK).body(productService.getById(productsId));
     }
 
-    @PutMapping("/products/{productsId}")
+    @PutMapping("/products/{productsId}") // 상품 수정 > products / productsId
     public ResponseEntity<ProductUpdateResponse> update (
             @RequestBody ProductUpdateRequest request,
             @PathVariable Long productsId
     ) {
         return ResponseEntity.status(HttpStatus.OK).body(productService.update(productsId, request));
+    }
+
+    @DeleteMapping("/products/{productsId}") // 상품 삭제 > products / productsId
+    public void delete (@PathVariable Long productsId) {
+        productService.delete(productsId);
     }
 
 }
