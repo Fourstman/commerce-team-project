@@ -1,7 +1,7 @@
 package com.commerceteamproject.admin.controller;
 
 import com.commerceteamproject.admin.dto.SaveAdminRequest;
-import com.commerceteamproject.admin.enitity.Admin;
+import com.commerceteamproject.admin.dto.SaveAdminResponse;
 import com.commerceteamproject.admin.service.AdminService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +18,8 @@ public class AdminController {
 
     // 회원가입
     @PostMapping("/signup")
-    public ResponseEntity<String> saveAdmin(
+    public ResponseEntity<SaveAdminResponse> saveAdmin(
             @Valid @RequestBody SaveAdminRequest request) {
-        Admin admin = adminService.save(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body("회원가입이 완료되었습니다.");
+        return ResponseEntity.status(HttpStatus.CREATED).body(adminService.save(request));
     }
 }
