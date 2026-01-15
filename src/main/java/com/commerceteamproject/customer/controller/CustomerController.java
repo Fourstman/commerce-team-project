@@ -30,7 +30,7 @@ public class CustomerController {
     public ResponseEntity<PageResponse<GetCustomerListResponse>> findAll(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) CustomerState state,
-            @PageableDefault(page = 1, size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+            @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin
     ) {
         if (sessionAdmin == null) {

@@ -22,7 +22,7 @@ public class CustomerService {
     @Transactional(readOnly = true)
     public PageResponse<GetCustomerListResponse> findAll(String keyword, CustomerState state, Pageable pageable) {
 
-        // 키워드가 있으면 키워드가 포함된 이름/이메일 검색
+        // 키워드가 있으면 키워드가 포함된 이름/이메일 필터링
         // 상태가 있으면 상태 기준으로 필터링
         // 키워드/상태가 없으면 전체 조회
         Page<Customer> customers = customerRepository.findByKeywordAndState(keyword, state, pageable);
