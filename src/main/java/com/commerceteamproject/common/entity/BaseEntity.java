@@ -1,4 +1,4 @@
-package com.commerceteamproject.common;
+package com.commerceteamproject.common.entity;
 
 import jakarta.persistence.*;
 import lombok.Getter;

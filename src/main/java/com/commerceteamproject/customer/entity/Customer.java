@@ -1,8 +1,8 @@
 package com.commerceteamproject.customer.entity;
 
-import com.commerceteamproject.common.BaseEntity;
+import com.commerceteamproject.common.entity.BaseEntity;
 import com.commerceteamproject.customer.dto.UpdateCustomerInformationRequest;
-import com.commerceteamproject.customer.dto.UpdateCustomerStateRequest;
+import com.commerceteamproject.customer.dto.UpdateCustomerStatusRequest;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import lombok.AccessLevel;
@@ -23,13 +23,13 @@ public class Customer extends BaseEntity {
     private String phone;
 
     @Enumerated(EnumType.STRING)
-    private CustomerState state;
+    private CustomerStatus status;
 
-    public Customer(String name, String email, String phone, CustomerState state) {
+    public Customer(String name, String email, String phone, CustomerStatus status) {
         this.name = name;
         this.email = email;
         this.phone = phone;
-        this.state = state;
+        this.status = status;
     }
 
     public void updateInformation(@Valid UpdateCustomerInformationRequest request) {
@@ -38,7 +38,7 @@ public class Customer extends BaseEntity {
         this.phone = request.getPhone();
     }
 
-    public void updateState(@Valid UpdateCustomerStateRequest request) {
-        this.state = request.getState();
+    public void updateStatus(@Valid UpdateCustomerStatusRequest request) {
+        this.status = request.getStatus();
     }
 }

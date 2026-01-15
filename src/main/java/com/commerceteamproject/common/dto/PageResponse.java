@@ -1,4 +1,4 @@
-package com.commerceteamproject.customer.dto;
+package com.commerceteamproject.common.dto;
 
 import lombok.Getter;
 import org.springframework.data.domain.Page;
