@@ -4,6 +4,7 @@ import com.commerceteamproject.admin.dto.*;
 import com.commerceteamproject.admin.entity.Admin;
 import com.commerceteamproject.admin.exception.*;
 import com.commerceteamproject.admin.repository.AdminRepository;
+import com.commerceteamproject.common.dto.PageResponse;
 import com.commerceteamproject.config.PasswordEncoder;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -75,7 +76,7 @@ public class AdminService {
 
     // 관리자 리스트 조회(쿼리 파라미터 사용)
     @Transactional(readOnly = true)
-    public AdminListResponse findAdmins(AdminListRequest request) {
+    public PageResponse<AdminListItemResponse> findAdmins(AdminListRequest request) {
 
         Sort sort = request.getDirection().equalsIgnoreCase("asc")
                 ? Sort.by(request.getSortBy()).ascending()
@@ -94,17 +95,9 @@ public class AdminService {
                 pageable
         );
 
-        List<AdminListItemResponse> admins = page.getContent().stream()
-                .map(AdminListItemResponse::new)
-                .toList();
+        Page<AdminListItemResponse> admins = page.map(AdminListItemResponse::new);
 
-        return new AdminListResponse(
-                admins,
-                page.getNumber() + 1,
-                page.getSize(),
-                page.getTotalElements(),
-                page.getTotalPages()
-        );
+        return new PageResponse<>(admins);
     }
 
     // 관리자 상세 조회

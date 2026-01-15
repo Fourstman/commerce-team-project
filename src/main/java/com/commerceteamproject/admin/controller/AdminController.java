@@ -4,6 +4,7 @@ import com.commerceteamproject.admin.dto.*;
 import com.commerceteamproject.admin.dto.*;
 import com.commerceteamproject.admin.entity.AdminRole;
 import com.commerceteamproject.admin.service.AdminService;
+import com.commerceteamproject.common.dto.PageResponse;
 import com.commerceteamproject.common.exception.LoginRequiredException;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
@@ -48,7 +49,7 @@ public class AdminController {
 
     // 관리자 리스트 조회
     @GetMapping("/admins")
-    public ResponseEntity<AdminListResponse> getAdmins(
+    public ResponseEntity<PageResponse<AdminListItemResponse>> getAdmins(
             AdminListRequest request
     ) {
         return ResponseEntity.ok(adminService.findAdmins(request));
@@ -175,7 +176,7 @@ public class AdminController {
     }
 
     // 관리자 프로필 수정
-    @PatchMapping("/admins/profiles")
+    @PutMapping("/admins/profiles")
     public ResponseEntity<UpdateOwnAdminResponse> updateOwnAdmin(
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin,
             @RequestBody UpdateOwnAdminRequest request) {
