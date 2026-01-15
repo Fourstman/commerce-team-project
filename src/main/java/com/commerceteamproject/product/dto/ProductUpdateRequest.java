@@ -1,5 +1,6 @@
 package com.commerceteamproject.product.dto;
 
+import com.commerceteamproject.product.entity.ProductStatus;
 import lombok.Getter;
 
 @Getter
@@ -9,6 +10,6 @@ public class ProductUpdateRequest {
     private int price;
     private int stock;
     private String description;
-    private String status;
+    private ProductStatus status;
 }
 

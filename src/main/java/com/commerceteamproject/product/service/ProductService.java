@@ -3,6 +3,7 @@ package com.commerceteamproject.product.service;
 import com.commerceteamproject.product.dto.*;
 import com.commerceteamproject.product.entity.Product;
 import com.commerceteamproject.product.repository.ProductRepository;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -17,7 +18,7 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
-    public ProductCreateResponse save(ProductCreateRquest request) {
+    public ProductCreateResponse save(ProductCreateRequest request) {
         Product product = new Product(
                 request.getName(),
                 request.getCategory(),
@@ -91,7 +92,7 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductUpdateResponse update(Long productsId, ProductUpdateRequest request) { //
+    public ProductUpdateResponse update(Long productsId, @Valid ProductUpdateRequest request) { //
         Product product = productRepository.findById(productsId).orElseThrow(
                 () -> new IllegalArgumentException(" 없는 상품 입니다.")
         );

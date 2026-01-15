@@ -1,6 +1,6 @@
 package com.commerceteamproject.product.entity;
 
-import com.commerceteamproject.common.BaseEntity;
+import com.commerceteamproject.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -21,9 +21,9 @@ public class Product extends BaseEntity {
     private int price;
     private int stock;
     private String description;
-    private String status;
+    private ProductStatus status;
 
-    public Product(String name, String category, int price, int stock, String description, String status) {
+    public Product(String name, String category, int price, int stock, String description, ProductStatus status ) {
         this.name = name;
         this.category = category;
         this.price = price;
@@ -32,7 +32,7 @@ public class Product extends BaseEntity {
         this.status = status;
     }
 
-    public void update( String name, String category, int price, int stock, String description, String status) {
+    public void update( String name, String category, int price, int stock, String description, ProductStatus status ) {
         this.name = name;
         this.category = category;
         this.price = price;
@@ -41,4 +41,5 @@ public class Product extends BaseEntity {
         this.status = status;
 
     }
+
 }
