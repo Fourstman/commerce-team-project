@@ -1,6 +1,6 @@
 package com.commerceteamproject.admin.exception;
 
-import com.commerceteam.common.ServiceException;
+import com.commerceteamproject.common.ServiceException;
 import org.springframework.http.HttpStatus;
 
 public class PasswordNotMatchException extends ServiceException {

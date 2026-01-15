@@ -1,8 +1,8 @@
 package com.commerceteamproject.admin.repository;
 
-import com.commerceteam.admin.entity.Admin;
-import com.commerceteam.admin.entity.AdminRole;
-import com.commerceteam.admin.entity.AdminStatus;
+import com.commerceteamproject.admin.entity.Admin;
+import com.commerceteamproject.admin.entity.AdminRole;
+import com.commerceteamproject.admin.entity.AdminStatus;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

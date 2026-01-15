@@ -1,8 +1,8 @@
 package com.commerceteamproject.admin.controller;
 
-import com.commerceteam.admin.dto.*;
-import com.commerceteam.admin.entity.AdminRole;
-import com.commerceteam.admin.service.AdminService;
+import com.commerceteamproject.admin.dto.*;
+import com.commerceteamproject.admin.entity.AdminRole;
+import com.commerceteamproject.admin.service.AdminService;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

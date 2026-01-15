@@ -1,10 +1,10 @@
 package com.commerceteamproject.admin.service;
 
-import com.commerceteam.admin.dto.*;
-import com.commerceteam.admin.entity.Admin;
-import com.commerceteam.admin.exception.*;
-import com.commerceteam.admin.repository.AdminRepository;
-import com.commerceteam.config.PasswordEncoder;
+import com.commerceteamproject.admin.dto.*;
+import com.commerceteamproject.admin.entity.Admin;
+import com.commerceteamproject.admin.exception.*;
+import com.commerceteamproject.admin.repository.AdminRepository;
+import com.commerceteamproject.config.PasswordEncoder;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

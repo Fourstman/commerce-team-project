@@ -1,6 +1,6 @@
 package com.commerceteamproject.config;
 
-import com.commerceteam.common.ServiceException;
+import com.commerceteamproject.common.ServiceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;

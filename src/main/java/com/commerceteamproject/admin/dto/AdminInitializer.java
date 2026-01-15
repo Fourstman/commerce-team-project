@@ -1,9 +1,9 @@
 package com.commerceteamproject.admin.dto;
 
-import com.commerceteam.admin.entity.Admin;
-import com.commerceteam.admin.entity.AdminRole;
-import com.commerceteam.admin.repository.AdminRepository;
-import com.commerceteam.config.PasswordEncoder;
+import com.commerceteamproject.admin.entity.Admin;
+import com.commerceteamproject.admin.entity.AdminRole;
+import com.commerceteamproject.admin.repository.AdminRepository;
+import com.commerceteamproject.config.PasswordEncoder;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;

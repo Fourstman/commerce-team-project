@@ -1,9 +1,9 @@
 package com.commerceteamproject.admin.dto;
 
 
-import com.commerceteam.admin.entity.Admin;
-import com.commerceteam.admin.entity.AdminRole;
-import com.commerceteam.admin.entity.AdminStatus;
+import com.commerceteamproject.admin.entity.Admin;
+import com.commerceteamproject.admin.entity.AdminRole;
+import com.commerceteamproject.admin.entity.AdminStatus;
 import lombok.Getter;
 
 import java.time.LocalDateTime;

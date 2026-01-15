@@ -1,6 +1,6 @@
 package com.commerceteamproject.admin.dto;
 
-import com.commerceteam.admin.entity.AdminRole;
+import com.commerceteamproject.admin.entity.AdminRole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
