@@ -4,7 +4,9 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
 
 @Getter
-public class AdminPasswordUpdateRequest {
-    @NotBlank(message = "비밀번호는 필수입니다.")
+public class LoginRequest {
+    @NotBlank
+    private String email;
+    @NotBlank
     private String password;
 }

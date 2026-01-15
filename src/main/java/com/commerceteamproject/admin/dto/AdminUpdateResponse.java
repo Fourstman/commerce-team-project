@@ -7,12 +7,12 @@ public class AdminUpdateResponse {
     private final Long id;
     private final String name;
     private final String email;
-    private final String password;
+    private final String phoneNumber;
 
-    public AdminUpdateResponse(Long id, String name, String email, String password) {
+    public AdminUpdateResponse(Long id, String name, String email, String phoneNumber) {
         this.id = id;
         this.name = name;
         this.email = email;
-        this.password = password;
+        this.phoneNumber = phoneNumber;
     }
 }
