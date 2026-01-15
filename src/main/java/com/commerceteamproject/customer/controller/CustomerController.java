@@ -1,7 +1,7 @@
 package com.commerceteamproject.customer.controller;
 
 import com.commerceteamproject.admin.dto.SessionAdmin;
-import com.commerceteamproject.admin.enitity.AdminRole;
+import com.commerceteamproject.admin.entity.AdminRole;
 import com.commerceteamproject.common.dto.PageResponse;
 import com.commerceteamproject.customer.dto.*;
 import com.commerceteamproject.customer.entity.CustomerStatus;
