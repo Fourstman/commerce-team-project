@@ -2,13 +2,17 @@ package com.commerceteamproject.customer.service;
 
 import com.commerceteamproject.customer.dto.*;
 import com.commerceteamproject.customer.entity.Customer;
+import com.commerceteamproject.customer.entity.CustomerSortBy;
+import com.commerceteamproject.customer.entity.CustomerSortOrder;
 import com.commerceteamproject.customer.entity.CustomerState;
 import com.commerceteamproject.customer.exception.CustomerNotFoundException;
+import com.commerceteamproject.customer.exception.InvalidParameterException;
 import com.commerceteamproject.customer.repository.CustomerRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,6 +25,18 @@ public class CustomerService {
     // 고객 리스트 조회
     @Transactional(readOnly = true)
     public PageResponse<GetCustomerListResponse> findAll(String keyword, CustomerState state, Pageable pageable) {
+
+        // pageable sort 검증
+        Sort.Order order = pageable.getSort().iterator().next();;
+        String property = order.getProperty();
+        if (!CustomerSortBy.exists(property)) {
+            throw new InvalidParameterException("잘못된 정렬 기준입니다.");
+        }
+
+        String direction = order.getDirection().name();
+        if (!CustomerSortOrder.exists(direction)) {
+            throw new InvalidParameterException("잘못된 정렬 방향입니다.");
+        }
 
         // 키워드가 있으면 키워드가 포함된 이름/이메일 필터링
         // 상태가 있으면 상태 기준으로 필터링
