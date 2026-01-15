@@ -15,13 +15,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @RequestMapping("/customers")
 @RestController
 @RequiredArgsConstructor
-@Validated
 public class CustomerController {
 
     private final CustomerService customerService;
@@ -38,8 +36,7 @@ public class CustomerController {
             throw new LoginRequiredException("로그인이 필요합니다.");
         }
 
-        AdminRole role = sessionAdmin.getAdminRole();
-        if (role != AdminRole.SUPER && role != AdminRole.RUN) {
+        if (sessionAdmin.getAdminRole() == AdminRole.CS) {
             throw new AccessDeniedException("권한이 없습니다.");
         }
 
@@ -58,8 +55,7 @@ public class CustomerController {
             throw new LoginRequiredException("로그인이 필요합니다.");
         }
 
-        AdminRole role = sessionAdmin.getAdminRole();
-        if (role != AdminRole.SUPER && role != AdminRole.RUN) {
+        if (sessionAdmin.getAdminRole() == AdminRole.CS) {
             throw new AccessDeniedException("권한이 없습니다.");
         }
 
@@ -77,8 +73,7 @@ public class CustomerController {
             throw new LoginRequiredException("로그인이 필요합니다.");
         }
 
-        AdminRole role = sessionAdmin.getAdminRole();
-        if (role != AdminRole.SUPER && role != AdminRole.RUN) {
+        if (sessionAdmin.getAdminRole() == AdminRole.CS) {
             throw new AccessDeniedException("권한이 없습니다.");
         }
 
@@ -96,8 +91,7 @@ public class CustomerController {
             throw new LoginRequiredException("로그인이 필요합니다.");
         }
 
-        AdminRole role = sessionAdmin.getAdminRole();
-        if (role != AdminRole.SUPER && role != AdminRole.RUN) {
+        if (sessionAdmin.getAdminRole() == AdminRole.CS) {
             throw new AccessDeniedException("권한이 없습니다.");
         }
 
@@ -114,8 +108,7 @@ public class CustomerController {
             throw new LoginRequiredException("로그인이 필요합니다.");
         }
 
-        AdminRole role = sessionAdmin.getAdminRole();
-        if (role != AdminRole.SUPER) {
+        if (sessionAdmin.getAdminRole() != AdminRole.SUPER) {
             throw new AccessDeniedException("권한이 없습니다.");
         }
 
