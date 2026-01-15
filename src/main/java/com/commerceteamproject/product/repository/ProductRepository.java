@@ -2,20 +2,12 @@ package com.commerceteamproject.product.repository;
 
 import com.commerceteamproject.product.entity.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.domain.Sort;
 
 import java.util.List;
 
 public interface ProductRepository extends JpaRepository<Product, Long> {
 
-    // 기본 최신순
-    List<Product> findAllByCategoryOrderByModifiedAtDesc(String category);
-    List<Product> findAllByOrderByModifiedAtDesc();
 
-    // 가격 순서
-    List<Product> findAllByOrderByPriceDesc();
-    List<Product> findAllByCategoryOrderByPriceDesc(String category);
-
-    // 재고 순서
-    List<Product> findAllByOrderByStockDesc();
-    List<Product> findAllByCategoryOrderByStockDesc(String category);
+    List<Product> findAllByCategory(String category, Sort sortCondition);
 }

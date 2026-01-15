@@ -4,6 +4,7 @@ import com.commerceteamproject.product.dto.*;
 import com.commerceteamproject.product.entity.Product;
 import com.commerceteamproject.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,34 +38,28 @@ public class ProductService {
         );
 
     }
+
     @Transactional(readOnly = true)
     public List<ProductGetResponse> getAll(String category, String sort) {
-        List<Product> products;
-        List<ProductGetResponse> dtos = new ArrayList<>();
 
-        boolean sortByPrice ="price".equals(sort);
-        boolean sortByStock ="stock".equals(sort);
+        Sort sortCondition = Sort.by("modifiedAt").descending();
 
-        if (category != null && !category.isEmpty()) {
-            if (sortByPrice) {
-                products = productRepository.findAllByCategoryOrderByPriceDesc(category);
-            } else if (sortByStock) {
-                products = productRepository.findAllByCategoryOrderByStockDesc(category);
-            } else {
-                products = productRepository.findAllByCategoryOrderByModifiedAtDesc(category);
-            }
-        } else {
-            if (sortByPrice) {
-                products = productRepository.findAllByOrderByPriceDesc();
-            } else if (sortByStock) {
-                products = productRepository.findAllByOrderByStockDesc();
-            } else {
-                products = productRepository.findAllByOrderByModifiedAtDesc();
-            }
+        if ("price".equals(sort)) {
+            sortCondition = Sort.by("price").descending();
+        } else if ("stock".equals(sort)) {
+            sortCondition = Sort.by("stock").descending();
         }
 
-        for(Product product : products) {
-            ProductGetResponse productGetResponse = new ProductGetResponse(
+        List<Product> products;
+        if (category != null && !category.isEmpty()) {
+            products = productRepository.findAllByCategory(category, sortCondition);
+        } else {
+            products = productRepository.findAll(sortCondition);
+        }
+
+        List<ProductGetResponse> dtos = new ArrayList<>();
+        for (Product product : products) {
+            dtos.add(new ProductGetResponse(
                     product.getId(),
                     product.getName(),
                     product.getCategory(),
@@ -72,9 +67,9 @@ public class ProductService {
                     product.getStock(),
                     product.getDescription(),
                     product.getStatus()
-            );
-            dtos.add(productGetResponse);
+            ));
         }
+
         return dtos;
     }
 

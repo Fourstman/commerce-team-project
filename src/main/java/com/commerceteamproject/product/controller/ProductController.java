@@ -49,6 +49,7 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(productService.update(productsId, request));
     }
 
+
     @DeleteMapping("/products/{productsId}") // 상품 삭제 > products / productsId
     public void delete (@PathVariable Long productsId) {
         productService.delete(productsId);
