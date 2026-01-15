@@ -1,11 +1,12 @@
 package com.commerceteamproject.customer.service;
 
+import com.commerceteamproject.common.dto.PageResponse;
 import com.commerceteamproject.customer.dto.*;
 import com.commerceteamproject.customer.entity.Customer;
 import com.commerceteamproject.customer.entity.CustomerSortBy;
 import com.commerceteamproject.customer.entity.CustomerStatus;
 import com.commerceteamproject.customer.exception.CustomerNotFoundException;
-import com.commerceteamproject.customer.exception.InvalidParameterException;
+import com.commerceteamproject.common.exception.InvalidParameterException;
 import com.commerceteamproject.customer.repository.CustomerRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

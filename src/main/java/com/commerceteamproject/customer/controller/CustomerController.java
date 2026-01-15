@@ -2,10 +2,11 @@ package com.commerceteamproject.customer.controller;
 
 import com.commerceteamproject.admin.dto.SessionAdmin;
 import com.commerceteamproject.admin.enitity.AdminRole;
+import com.commerceteamproject.common.dto.PageResponse;
 import com.commerceteamproject.customer.dto.*;
 import com.commerceteamproject.customer.entity.CustomerStatus;
-import com.commerceteamproject.customer.exception.AccessDeniedException;
-import com.commerceteamproject.customer.exception.LoginRequiredException;
+import com.commerceteamproject.common.exception.AccessDeniedException;
+import com.commerceteamproject.common.exception.LoginRequiredException;
 import com.commerceteamproject.customer.service.CustomerService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;

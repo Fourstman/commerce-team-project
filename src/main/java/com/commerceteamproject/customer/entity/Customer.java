@@ -1,6 +1,6 @@
 package com.commerceteamproject.customer.entity;
 
-import com.commerceteamproject.common.BaseEntity;
+import com.commerceteamproject.common.entity.BaseEntity;
 import com.commerceteamproject.customer.dto.UpdateCustomerInformationRequest;
 import com.commerceteamproject.customer.dto.UpdateCustomerStatusRequest;
 import jakarta.persistence.*;
