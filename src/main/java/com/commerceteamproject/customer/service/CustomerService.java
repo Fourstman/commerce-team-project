@@ -33,11 +33,6 @@ public class CustomerService {
             throw new InvalidParameterException("잘못된 정렬 기준입니다.");
         }
 
-        String direction = order.getDirection().name();
-        if (!CustomerSortOrder.exists(direction)) {
-            throw new InvalidParameterException("잘못된 정렬 방향입니다.");
-        }
-
         // 키워드가 있으면 키워드가 포함된 이름/이메일 필터링
         // 상태가 있으면 상태 기준으로 필터링
         // 키워드/상태가 없으면 전체 조회
