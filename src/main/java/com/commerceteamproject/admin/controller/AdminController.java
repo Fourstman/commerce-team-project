@@ -4,6 +4,7 @@ import com.commerceteamproject.admin.dto.*;
 import com.commerceteamproject.admin.dto.*;
 import com.commerceteamproject.admin.entity.AdminRole;
 import com.commerceteamproject.admin.service.AdminService;
+import com.commerceteamproject.common.exception.LoginRequiredException;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -38,7 +39,7 @@ public class AdminController {
     public ResponseEntity<Void> logout(
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin, HttpSession session) {
         if (sessionAdmin == null) {
-            return ResponseEntity.badRequest().build();
+            throw new LoginRequiredException("로그인이 필요합니다.");
         }
         session.invalidate();
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
@@ -163,18 +164,24 @@ public class AdminController {
         return ResponseEntity.status(HttpStatus.OK).body(adminService.pwUpdate(adminId, request));
     }
 
-    // 내 프로필 조회
+    // 관리자 프로필 조회
     @GetMapping("/admins/profiles")
     public ResponseEntity<FindOwnAdminResponse> findOwnAdmin(
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin) {
+        if (sessionAdmin == null) {
+            throw new LoginRequiredException("로그인이 필요합니다.");
+        }
         return ResponseEntity.status(HttpStatus.OK).body(adminService.findOwn(sessionAdmin));
     }
 
-    // 내 프로필 수정
+    // 관리자 프로필 수정
     @PatchMapping("/admins/profiles")
     public ResponseEntity<UpdateOwnAdminResponse> updateOwnAdmin(
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin,
             @RequestBody UpdateOwnAdminRequest request) {
+        if (sessionAdmin == null) {
+            throw new LoginRequiredException("로그인이 필요합니다.");
+        }
         return ResponseEntity.status(HttpStatus.OK).body(adminService.updateOwn(sessionAdmin, request));
     }
 }
