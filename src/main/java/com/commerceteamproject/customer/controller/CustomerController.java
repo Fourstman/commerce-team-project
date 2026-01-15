@@ -3,16 +3,15 @@ package com.commerceteamproject.customer.controller;
 import com.commerceteamproject.admin.dto.SessionAdmin;
 import com.commerceteamproject.admin.enitity.AdminRole;
 import com.commerceteamproject.customer.dto.*;
-import com.commerceteamproject.customer.entity.CustomerSortBy;
-import com.commerceteamproject.customer.entity.CustomerSortOrder;
 import com.commerceteamproject.customer.entity.CustomerState;
 import com.commerceteamproject.customer.exception.AccessDeniedException;
 import com.commerceteamproject.customer.exception.LoginRequiredException;
 import com.commerceteamproject.customer.service.CustomerService;
-import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
@@ -30,13 +29,9 @@ public class CustomerController {
     @GetMapping
     public ResponseEntity<PageResponse<GetCustomerListResponse>> findAll(
             @RequestParam(required = false) String keyword,
-            @RequestParam(defaultValue = "1") @Positive int pageNum,
-            @RequestParam(defaultValue = "10") @Positive int pageSize,
-            @RequestParam(defaultValue = "createdAt") CustomerSortBy sortBy,
-            @RequestParam(required = false) CustomerSortOrder sortOrder,
             @RequestParam(required = false) CustomerState state,
-            @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin,
-            HttpSession session
+            @PageableDefault(page = 1, size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+            @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin
     ) {
         if (sessionAdmin == null) {
             throw new LoginRequiredException("로그인이 필요합니다.");
@@ -48,7 +43,7 @@ public class CustomerController {
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(customerService.findAll(
-                keyword, pageNum, pageSize, sortBy, sortOrder, state
+                keyword, state, pageable
         ));
     }
 
@@ -56,8 +51,7 @@ public class CustomerController {
     @GetMapping("/{customerId}")
     public ResponseEntity<GetCustomerResponse> findOne(
             @PathVariable Long customerId,
-            @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin,
-            HttpSession session
+            @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin
     ) {
         if (sessionAdmin == null) {
             throw new LoginRequiredException("로그인이 필요합니다.");
@@ -76,8 +70,7 @@ public class CustomerController {
     public ResponseEntity<UpdateCustomerInformationResponse> updateInformation(
             @PathVariable Long customerId,
             @Valid @RequestBody UpdateCustomerInformationRequest request,
-            @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin,
-            HttpSession session
+            @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin
     ) {
         if (sessionAdmin == null) {
             throw new LoginRequiredException("로그인이 필요합니다.");
@@ -96,8 +89,7 @@ public class CustomerController {
     public ResponseEntity<UpdateCustomerStateResponse> updateState(
             @PathVariable Long customerId,
             @Valid @RequestBody UpdateCustomerStateRequest request,
-            @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin,
-            HttpSession session
+            @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin
     ) {
         if (sessionAdmin == null) {
             throw new LoginRequiredException("로그인이 필요합니다.");
@@ -115,8 +107,7 @@ public class CustomerController {
     @DeleteMapping("/{customerId}")
     public ResponseEntity<Void> delete(
             @PathVariable Long customerId,
-            @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin,
-            HttpSession session
+            @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin
     ) {
         if (sessionAdmin == null) {
             throw new LoginRequiredException("로그인이 필요합니다.");

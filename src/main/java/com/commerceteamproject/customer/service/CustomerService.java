@@ -2,17 +2,13 @@ package com.commerceteamproject.customer.service;
 
 import com.commerceteamproject.customer.dto.*;
 import com.commerceteamproject.customer.entity.Customer;
-import com.commerceteamproject.customer.entity.CustomerSortBy;
-import com.commerceteamproject.customer.entity.CustomerSortOrder;
 import com.commerceteamproject.customer.entity.CustomerState;
 import com.commerceteamproject.customer.exception.CustomerNotFoundException;
 import com.commerceteamproject.customer.repository.CustomerRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,21 +20,7 @@ public class CustomerService {
 
     // 고객 리스트 조회
     @Transactional(readOnly = true)
-    public PageResponse<GetCustomerListResponse> findAll(String keyword, int pageNum, int pageSize, CustomerSortBy sortBy, CustomerSortOrder sortOrder, CustomerState state) {
-
-        // 정렬 기준이 가입일이면 내림차순 정렬, 그 외엔 오름차순 정렬
-        if (sortOrder == null) {
-            if (sortBy == CustomerSortBy.createdAt) {
-                sortOrder = CustomerSortOrder.desc;
-            } else {
-                sortOrder = CustomerSortOrder.asc;
-            }
-        }
-
-        // 정렬 및 페이징 조건 설정
-        Sort.Direction direction = Sort.Direction.fromString(sortOrder.name());
-        Sort sort = Sort.by(direction, sortBy.name());
-        Pageable pageable = PageRequest.of(pageNum - 1, pageSize, sort);
+    public PageResponse<GetCustomerListResponse> findAll(String keyword, CustomerState state, Pageable pageable) {
 
         // 키워드가 있으면 키워드가 포함된 이름/이메일 검색
         // 상태가 있으면 상태 기준으로 필터링
