@@ -1,6 +1,6 @@
 package com.commerceteamproject.admin.entity;
 
-import com.commerceteamproject.common.BaseEntity;
+import com.commerceteamproject.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
