@@ -25,20 +25,13 @@ public class Customer extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private CustomerStatus status;
 
-    public Customer(String name, String email, String phone, CustomerStatus status) {
-        this.name = name;
-        this.email = email;
-        this.phone = phone;
-        this.status = status;
-    }
-
-    public void updateInformation(@Valid UpdateCustomerInformationRequest request) {
+    public void updateInformation(UpdateCustomerInformationRequest request) {
         this.name = request.getName();
         this.email = request.getEmail();
         this.phone = request.getPhone();
     }
 
-    public void updateStatus(@Valid UpdateCustomerStatusRequest request) {
+    public void updateStatus(UpdateCustomerStatusRequest request) {
         this.status = request.getStatus();
     }
 }
