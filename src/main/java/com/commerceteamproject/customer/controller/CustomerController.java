@@ -36,10 +36,6 @@ public class CustomerController {
             throw new LoginRequiredException("로그인이 필요합니다.");
         }
 
-        if (sessionAdmin.getAdminRole() == AdminRole.CS) {
-            throw new AccessDeniedException("권한이 없습니다.");
-        }
-
         return ResponseEntity.status(HttpStatus.OK).body(customerService.findAll(
                 keyword, status, pageable
         ));
@@ -53,10 +49,6 @@ public class CustomerController {
     ) {
         if (sessionAdmin == null) {
             throw new LoginRequiredException("로그인이 필요합니다.");
-        }
-
-        if (sessionAdmin.getAdminRole() == AdminRole.CS) {
-            throw new AccessDeniedException("권한이 없습니다.");
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(customerService.findOne(customerId));
