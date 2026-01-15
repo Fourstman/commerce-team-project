@@ -4,14 +4,13 @@ import com.commerceteamproject.admin.entity.AdminRole;
 import lombok.Getter;
 
 @Getter
-public class SessionAdmin {
-    private final Long id;
-    private final String email;
+public class AdminRoleUpdateResponse {
+
+    private final Long adminId;
     private final AdminRole adminRole;
 
-    public SessionAdmin(Long id, String email, AdminRole adminRole) {
-        this.id = id;
-        this.email = email;
+    public AdminRoleUpdateResponse(Long adminId, AdminRole adminRole) {
+        this.adminId = adminId;
         this.adminRole = adminRole;
     }
 }
