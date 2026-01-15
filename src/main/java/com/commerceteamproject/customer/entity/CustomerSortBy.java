@@ -3,7 +3,7 @@ package com.commerceteamproject.customer.entity;
 import java.util.Arrays;
 
 public enum CustomerSortBy {
-    name, email, createdAt, state;
+    name, email, createdAt, status;
 
     public static boolean exists(String value) {
         return Arrays.stream(values())

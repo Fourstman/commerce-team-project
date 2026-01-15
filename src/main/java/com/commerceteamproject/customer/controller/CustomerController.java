@@ -3,7 +3,7 @@ package com.commerceteamproject.customer.controller;
 import com.commerceteamproject.admin.dto.SessionAdmin;
 import com.commerceteamproject.admin.enitity.AdminRole;
 import com.commerceteamproject.customer.dto.*;
-import com.commerceteamproject.customer.entity.CustomerState;
+import com.commerceteamproject.customer.entity.CustomerStatus;
 import com.commerceteamproject.customer.exception.AccessDeniedException;
 import com.commerceteamproject.customer.exception.LoginRequiredException;
 import com.commerceteamproject.customer.service.CustomerService;
@@ -29,7 +29,7 @@ public class CustomerController {
     @GetMapping
     public ResponseEntity<PageResponse<GetCustomerListResponse>> findAll(
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) CustomerState state,
+            @RequestParam(required = false) CustomerStatus status,
             @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin
     ) {
@@ -43,7 +43,7 @@ public class CustomerController {
         }
 
         return ResponseEntity.status(HttpStatus.OK).body(customerService.findAll(
-                keyword, state, pageable
+                keyword, status, pageable
         ));
     }
 
@@ -85,10 +85,10 @@ public class CustomerController {
     }
 
     // 고객 상태 변경
-    @PatchMapping("/{customerId}/state")
-    public ResponseEntity<UpdateCustomerStateResponse> updateState(
+    @PatchMapping("/{customerId}/status")
+    public ResponseEntity<UpdateCustomerStatusResponse> updateStatus(
             @PathVariable Long customerId,
-            @Valid @RequestBody UpdateCustomerStateRequest request,
+            @Valid @RequestBody UpdateCustomerStatusRequest request,
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin
     ) {
         if (sessionAdmin == null) {
@@ -100,7 +100,7 @@ public class CustomerController {
             throw new AccessDeniedException("권한이 없습니다.");
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(customerService.updateState(customerId, request));
+        return ResponseEntity.status(HttpStatus.OK).body(customerService.updateStatus(customerId, request));
     }
     
     // 고객 삭제

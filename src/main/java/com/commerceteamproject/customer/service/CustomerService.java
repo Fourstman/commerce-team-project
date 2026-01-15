@@ -4,7 +4,7 @@ import com.commerceteamproject.customer.dto.*;
 import com.commerceteamproject.customer.entity.Customer;
 import com.commerceteamproject.customer.entity.CustomerSortBy;
 import com.commerceteamproject.customer.entity.CustomerSortOrder;
-import com.commerceteamproject.customer.entity.CustomerState;
+import com.commerceteamproject.customer.entity.CustomerStatus;
 import com.commerceteamproject.customer.exception.CustomerNotFoundException;
 import com.commerceteamproject.customer.exception.InvalidParameterException;
 import com.commerceteamproject.customer.repository.CustomerRepository;
@@ -24,7 +24,7 @@ public class CustomerService {
 
     // 고객 리스트 조회
     @Transactional(readOnly = true)
-    public PageResponse<GetCustomerListResponse> findAll(String keyword, CustomerState state, Pageable pageable) {
+    public PageResponse<GetCustomerListResponse> findAll(String keyword, CustomerStatus status, Pageable pageable) {
 
         // pageable sort 검증
         Sort.Order order = pageable.getSort().iterator().next();;
@@ -41,14 +41,14 @@ public class CustomerService {
         // 키워드가 있으면 키워드가 포함된 이름/이메일 필터링
         // 상태가 있으면 상태 기준으로 필터링
         // 키워드/상태가 없으면 전체 조회
-        Page<Customer> customers = customerRepository.findByKeywordAndState(keyword, state, pageable);
+        Page<Customer> customers = customerRepository.findByKeywordAndStatus(keyword, status, pageable);
 
         Page<GetCustomerListResponse> page = customers.map(customer -> new GetCustomerListResponse(
                 customer.getId(),
                 customer.getName(),
                 customer.getEmail(),
                 customer.getPhone(),
-                customer.getState().getDescription(),
+                customer.getStatus().getDescription(),
                 customer.getCreatedAt()
         ));
         return new PageResponse<>(page);
@@ -64,7 +64,7 @@ public class CustomerService {
                 customer.getName(),
                 customer.getEmail(),
                 customer.getPhone(),
-                customer.getState().getDescription(),
+                customer.getStatus().getDescription(),
                 customer.getCreatedAt()
         );
     }
@@ -85,14 +85,14 @@ public class CustomerService {
 
     // 고객 상태 변경
     @Transactional
-    public UpdateCustomerStateResponse updateState(Long customerId, @Valid UpdateCustomerStateRequest request) {
+    public UpdateCustomerStatusResponse updateStatus(Long customerId, @Valid UpdateCustomerStatusRequest request) {
         Customer customer = customerRepository.findById(customerId).orElseThrow(
                 () -> new CustomerNotFoundException("존재하지 않는 고객입니다.")
         );
-        customer.updateState(request);
-        return new UpdateCustomerStateResponse(
+        customer.updateStatus(request);
+        return new UpdateCustomerStatusResponse(
                 customer.getName(),
-                customer.getState().getDescription()
+                customer.getStatus().getDescription()
         );
     }
 

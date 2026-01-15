@@ -1,13 +1,13 @@
 package com.commerceteamproject.customer.entity;
 
-public enum CustomerState {
+public enum CustomerStatus {
     ACTIVE("활성"),
     INACTIVE("비활성"),
     SUSPENDED("정지");
 
     private final String description;
 
-    CustomerState(String description) {
+    CustomerStatus(String description) {
         this.description = description;
     }
 
