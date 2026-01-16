@@ -66,6 +66,7 @@ public class OrderService {
                 admin
         );
         Order savedOrder = orderRepository.save(order);
+        customer.addOrder(savedOrder.getAmount());
         return new CreateOrderResponse(
                 savedOrder.getId(),
                 savedOrder.getOrderNumber(),
@@ -135,6 +136,9 @@ public class OrderService {
                 () -> new OrderNotFoundException("존재하지 않는 주문입니다.")
         );
         order.updateOrderStatus(request.getOrderStatus());
+        if (order.getOrderStatus() == OrderStatus.CANCEL) {
+            order.getCustomer().cancelOrder(order.getAmount());
+        }
         return new UpdateOrderStatusResponse(order.getOrderNumber(), order.getOrderStatus());
     }
 }
