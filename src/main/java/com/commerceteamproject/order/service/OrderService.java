@@ -9,10 +9,7 @@ import com.commerceteamproject.common.exception.LoginRequiredException;
 import com.commerceteamproject.customer.entity.Customer;
 import com.commerceteamproject.customer.exception.CustomerNotFoundException;
 import com.commerceteamproject.customer.repository.CustomerRepository;
-import com.commerceteamproject.order.dto.CreateOrderRequest;
-import com.commerceteamproject.order.dto.CreateOrderResponse;
-import com.commerceteamproject.order.dto.GetOneOrderResponse;
-import com.commerceteamproject.order.dto.GetOrderListResponse;
+import com.commerceteamproject.order.dto.*;
 import com.commerceteamproject.order.entity.Order;
 import com.commerceteamproject.order.entity.OrderStatus;
 import com.commerceteamproject.order.exception.OrderNotFoundException;
@@ -124,5 +121,15 @@ public class OrderService {
                 order.getAdmin().getEmail(),
                 order.getAdmin().getAdminRole()
         );
+    }
+
+    // 주문 상태 변경
+    @Transactional
+    public UpdateOrderStatusResponse updateStatus(Long orderId, UpdateOrderStatusRequest request) {
+        Order order = orderRepository.findById(orderId).orElseThrow(
+                () -> new OrderNotFoundException("존재하지 않는 주문입니다.")
+        );
+        order.updateOrderStatus(request.getOrderStatus());
+        return new UpdateOrderStatusResponse(order.getOrderNumber(), order.getOrderStatus());
     }
 }
