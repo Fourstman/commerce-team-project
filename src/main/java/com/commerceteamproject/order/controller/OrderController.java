@@ -7,6 +7,7 @@ import com.commerceteamproject.common.exception.AccessDeniedException;
 import com.commerceteamproject.common.exception.LoginRequiredException;
 import com.commerceteamproject.order.dto.CreateOrderRequest;
 import com.commerceteamproject.order.dto.CreateOrderResponse;
+import com.commerceteamproject.order.dto.GetOneOrderResponse;
 import com.commerceteamproject.order.dto.GetOrderListResponse;
 import com.commerceteamproject.order.entity.OrderStatus;
 import com.commerceteamproject.order.service.OrderService;
@@ -39,11 +40,22 @@ public class OrderController {
 
     // 주문 리스트 조회
     @GetMapping("/orders")
-    public ResponseEntity<PageResponse<GetOrderListResponse>> findAll(
+    public ResponseEntity<PageResponse<GetOrderListResponse>> findOrders(
             @RequestParam(required = false)String keyword,
             @RequestParam(required = false)OrderStatus status,
             @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
             @SessionAttribute(name = "loginAdmin", required = false)SessionAdmin sessionAdmin) {
         return ResponseEntity.status(HttpStatus.OK).body(orderService.findOrders(keyword, status, pageable, sessionAdmin));
+    }
+
+    // 주문 상세 조회
+    @GetMapping("/orders/{orderId}")
+    public ResponseEntity<GetOneOrderResponse> findOneOrder(
+            @PathVariable Long orderId,
+            @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin) {
+        if (sessionAdmin == null) {
+            throw new LoginRequiredException("로그인이 필요합니다.");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(orderService.findOne(orderId));
     }
 }

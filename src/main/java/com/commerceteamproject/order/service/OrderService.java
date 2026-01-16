@@ -11,6 +11,7 @@ import com.commerceteamproject.customer.exception.CustomerNotFoundException;
 import com.commerceteamproject.customer.repository.CustomerRepository;
 import com.commerceteamproject.order.dto.CreateOrderRequest;
 import com.commerceteamproject.order.dto.CreateOrderResponse;
+import com.commerceteamproject.order.dto.GetOneOrderResponse;
 import com.commerceteamproject.order.dto.GetOrderListResponse;
 import com.commerceteamproject.order.entity.Order;
 import com.commerceteamproject.order.entity.OrderStatus;
@@ -22,7 +23,6 @@ import com.commerceteamproject.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -79,15 +79,13 @@ public class OrderService {
         );
     }
 
+    // 주문 리스트 조회
     @Transactional(readOnly = true)
     public PageResponse<GetOrderListResponse> findOrders(
             String keyword, OrderStatus status, Pageable pageable, SessionAdmin sessionAdmin) {
         if (sessionAdmin == null) {
             throw new LoginRequiredException("로그인이 필요합니다.");
         }
-        Admin admin = adminRepository.findById(sessionAdmin.getId()).orElseThrow(
-                () -> new LoginRequiredException("유효하지 않은 세션입니다")
-        );
         List<String> allowedProperties = List.of("quantity", "amount", "createdAt");
         pageable.getSort().forEach(order -> {
             if (!allowedProperties.contains(order.getProperty())) {
@@ -107,5 +105,26 @@ public class OrderService {
                 o.getAdmin().getName()
         ));
         return new PageResponse<>(page);
+    }
+
+    // 주문 상세 조회
+    @Transactional(readOnly = true)
+    public GetOneOrderResponse findOne(Long orderId) {
+        Order order = orderRepository.findById(orderId).orElseThrow(
+                () -> new IllegalStateException("존재하지 않는 주문입니다.")
+        );
+        return new GetOneOrderResponse(
+                order.getOrderNumber(),
+                order.getCustomer().getName(),
+                order.getCustomer().getEmail(),
+                order.getProduct().getName(),
+                order.getQuantity(),
+                order.getAmount(),
+                order.getCreatedAt(),
+                order.getOrderStatus(),
+                order.getAdmin().getName(),
+                order.getAdmin().getEmail(),
+                order.getAdmin().getAdminRole()
+        );
     }
 }
