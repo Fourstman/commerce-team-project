@@ -128,7 +128,7 @@ public class ProductService {
             if (request.getStock() <= 0) {
                 product.changeStatus(ProductStatus.SOLD_OUT);
             } else {
-                product.changeStatus(ProductStatus.SALE);
+                product.changeStatus(ProductStatus.ON_SALE);
             }
         }
 
