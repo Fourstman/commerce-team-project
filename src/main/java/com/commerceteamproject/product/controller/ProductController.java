@@ -6,6 +6,7 @@ import com.commerceteamproject.common.exception.AccessDeniedException;
 import com.commerceteamproject.common.exception.LoginRequiredException;
 import com.commerceteamproject.product.dto.*;
 import com.commerceteamproject.product.service.ProductService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,111 +20,74 @@ import java.util.List;
 public class ProductController {
 
     private final ProductService productService;
+    private void validateAdmin(SessionAdmin sessionAdmin) {
 
-    @PostMapping("/products") // 상품 생성
-    public ResponseEntity<ProductCreateResponse> create(
-            @RequestBody ProductCreateRequest request,
-            @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin
-    ) {
         if (sessionAdmin == null) {
             throw new LoginRequiredException("로그인이 필요합니다.");
         }
-
         if (sessionAdmin.getAdminRole() == AdminRole.CS) {
             throw new AccessDeniedException("권한이 없습니다.");
         }
+    }
 
+    @PostMapping // 상품 생성
+    public ResponseEntity<ProductCreateResponse> create(
+            @Valid @RequestBody ProductCreateRequest request,
+            @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin
+    ) {
+        validateAdmin(sessionAdmin);
         ProductCreateResponse product = productService.save(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(product);
-
     }
 
-    @GetMapping("/products") // 상품 전체 조회
-    public ResponseEntity<List<ProductGetResponse>> getAll(
-            @RequestParam(required = false) String category,
-            @RequestParam(required = false) String sort,
-            @RequestParam(required = false) String keyword,
+    @GetMapping
+    public ResponseEntity<ProductListResponse> getProducts(
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
-            @RequestParam(defaultValue = "createdAt") String sortBy,
-            @RequestParam(defaultValue = "desc") String order,
-
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin
-
     ) {
-        if (sessionAdmin == null) {
-            throw new LoginRequiredException("로그인이 필요합니다.");
-        }
-
-        if (sessionAdmin.getAdminRole() == AdminRole.CS) {
-            throw new AccessDeniedException("권한이 없습니다.");
-        }
-        List<ProductGetResponse> products = productService.getAll(category, sort, keyword, page, size, sortBy, order);
-        return ResponseEntity.status(HttpStatus.OK).body(products);
-
+        validateAdmin(sessionAdmin);
+        return ResponseEntity.ok(
+                productService.getProducts(page, size)
+        );
     }
 
-    @GetMapping("/products/{productId}") // 상품 단건 조회
+    @GetMapping("{productId}") // 상품 단건 조회
     public ResponseEntity<ProductGetResponse> getById(
             @PathVariable Long productId,
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin
     ) {
-        if (sessionAdmin == null) {
-            throw new LoginRequiredException("로그인이 필요합니다.");
-        }
-
-        if (sessionAdmin.getAdminRole() == AdminRole.CS) {
-            throw new AccessDeniedException("권한이 없습니다.");
-        }
-
+        validateAdmin(sessionAdmin);
         return ResponseEntity.status(HttpStatus.OK).body(productService.getById(productId));
     }
 
-    @PutMapping("/products/{productId}") // 상품 수정
+    @PutMapping("{productId}") // 상품 수정
     public ResponseEntity<ProductUpdateResponse> updateProductInfo(
-            @RequestBody ProductUpdateRequest request,
+            @Valid @RequestBody ProductUpdateRequest request,
             @PathVariable Long productId,
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin
     ) {
-        if (sessionAdmin == null) {
-            throw new LoginRequiredException("로그인이 필요합니다.");
-        }
-
-        if (sessionAdmin.getAdminRole() == AdminRole.CS) {
-            throw new AccessDeniedException("권한이 없습니다.");
-        }
+        validateAdmin(sessionAdmin);
         return ResponseEntity.status(HttpStatus.OK).body(productService.updateProductInfo(productId, request));
     }
 
-    @PatchMapping("/products/{productId}/stock")
+    @PatchMapping("{productId}/stock")
     public ResponseEntity<ProductStockUpdateResponse> updateStock(
             @PathVariable Long productId,
             @RequestBody ProductStockUpdateRequest request,
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin
     ) {
-        if (sessionAdmin == null) {
-            throw new LoginRequiredException("로그인이 필요합니다.");
-        }
-
-        if (sessionAdmin.getAdminRole() == AdminRole.CS) {
-            throw new AccessDeniedException("권한이 없습니다.");
-        }
+        validateAdmin(sessionAdmin);
         return ResponseEntity.status(HttpStatus.OK).body(productService.updateStock(productId, request));
     }
 
-    @DeleteMapping("/products/{productsId}") // 상품 삭제
+    @DeleteMapping("{productId}") // 상품 삭제
     public ResponseEntity<Void> delete(
-            @PathVariable Long productsId,
+            @PathVariable Long productId,
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin
     ) {
-        if (sessionAdmin == null) {
-            throw new LoginRequiredException("로그인이 필요합니다.");
-        }
-
-        if (sessionAdmin.getAdminRole() == AdminRole.CS) {
-            throw new AccessDeniedException("권한이 없습니다.");
-        }
-        productService.delete(productsId);
+        validateAdmin(sessionAdmin);
+        productService.delete(productId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 

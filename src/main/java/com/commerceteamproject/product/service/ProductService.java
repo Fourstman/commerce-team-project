@@ -6,6 +6,8 @@ import com.commerceteamproject.product.entity.ProductStatus;
 import com.commerceteamproject.product.repository.ProductRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -135,6 +137,37 @@ public class ProductService {
                 product.getStock(),
                 product.getStatus()
         );
+    }
+
+    @Transactional(readOnly = true)
+    public ProductListResponse getProducts(
+            int page,
+            int size
+    ) {
+        PageRequest pageRequest = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
+
+        Page<Product> productPage = productRepository.findAll(pageRequest);
+
+        List<ProductListItemResponse> items = productPage.getContent()
+                .stream()
+                .map(product -> new ProductListItemResponse(
+                        product.getId(),
+                        product.getName(),
+                        product.getCategory(),
+                        product.getPrice(),
+                        product.getStock(),
+                        product.getStatus(),
+                        product.getCreatedAt()))
+                        .toList();
+
+        ProductPageInfo pageInfo = new ProductPageInfo(
+                page,
+                size,
+                productPage.getTotalElements(),
+                productPage.getTotalPages()
+        );
+
+        return new ProductListResponse(items, pageInfo);
     }
 
     public void delete(Long productsId) {
