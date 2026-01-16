@@ -1,0 +1,49 @@
+package com.commerceteamproject.product.entity;
+
+import com.commerceteamproject.common.entity.BaseEntity;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+@Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "products")
+public class Product extends BaseEntity {
+
+    @Id
+    @GeneratedValue (strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    private String name;
+    private String category;
+    private int price;
+    private int stock;
+    private String description;
+    private ProductStatus status;
+
+    public Product(String name, String category, int price, int stock, String description, ProductStatus status ) {
+        this.name = name;
+        this.category = category;
+        this.price = price;
+        this.stock = stock;
+        this.description = description;
+        this.status = status;
+    }
+
+    public void updateInfo(String name, String category, int price) {
+        this.name = name;
+        this.category = category;
+        this.price = price;
+    }
+
+    public void updateStock(int stock) {
+        this.stock = stock;
+    }
+
+    public void changeStatus(ProductStatus status) {
+        this.status = status;
+    }
+
+}
