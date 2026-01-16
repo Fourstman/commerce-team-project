@@ -8,6 +8,7 @@ import com.commerceteamproject.common.exception.InvalidParameterException;
 import com.commerceteamproject.common.exception.LoginRequiredException;
 import com.commerceteamproject.product.dto.*;
 import com.commerceteamproject.product.entity.Product;
+import com.commerceteamproject.product.entity.ProductCategory;
 import com.commerceteamproject.product.entity.ProductStatus;
 import com.commerceteamproject.product.exception.ProductNotFoundException;
 import com.commerceteamproject.product.repository.ProductRepository;
@@ -56,14 +57,15 @@ public class ProductService {
 
     @Transactional(readOnly = true)
     public PageResponse<ProductListItemResponse> getProducts(
-            String keyword, ProductStatus productStatus, Pageable pageable) {
+            String keyword, ProductCategory productCategory, ProductStatus productStatus, Pageable pageable) {
         List<String> allowedProperties = List.of("price", "stock", "createdAt");
         pageable.getSort().forEach(order -> {
             if (!allowedProperties.contains(order.getProperty())) {
                 throw new InvalidParameterException("잘못된 정렬 기준입니다.");
             }
         });
-        Page<Product> products = productRepository.findByKeywordAndStatus(keyword, productStatus, pageable);
+        Page<Product> products = productRepository.findByKeywordAndStatus(
+                keyword, productCategory, productStatus, pageable);
         Page<ProductListItemResponse> page = products.map(p -> new ProductListItemResponse(
                 p.getId(),
                 p.getName(),

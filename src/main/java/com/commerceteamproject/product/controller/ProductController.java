@@ -6,6 +6,7 @@ import com.commerceteamproject.common.dto.PageResponse;
 import com.commerceteamproject.common.exception.AccessDeniedException;
 import com.commerceteamproject.common.exception.LoginRequiredException;
 import com.commerceteamproject.product.dto.*;
+import com.commerceteamproject.product.entity.ProductCategory;
 import com.commerceteamproject.product.entity.ProductStatus;
 import com.commerceteamproject.product.service.ProductService;
 import jakarta.validation.Valid;
@@ -48,6 +49,7 @@ public class ProductController {
     @GetMapping
     public ResponseEntity<PageResponse<ProductListItemResponse>> getProducts(
             @RequestParam(required = false)String keyword,
+            @RequestParam(required = false) ProductCategory productCategory,
             @RequestParam(required = false)ProductStatus productStatus,
             @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin
@@ -55,7 +57,7 @@ public class ProductController {
         if (sessionAdmin == null) {
             throw new LoginRequiredException("로그인이 필요합니다.");
         }
-        return ResponseEntity.ok(productService.getProducts(keyword, productStatus, pageable));
+        return ResponseEntity.ok(productService.getProducts(keyword, productCategory, productStatus, pageable));
     }
 
     @GetMapping("/{productId}") // 상품 단건 조회

@@ -20,13 +20,16 @@ public class Product extends BaseEntity {
     @JoinColumn(name = "admin_id", nullable = false)
     private Admin admin;
     private String name;
-    private String category;
+    @Enumerated(EnumType.STRING)
+    private ProductCategory category;
     private int price;
     private int stock;
     private String description;
+    @Enumerated(EnumType.STRING)
     private ProductStatus status;
 
-    public Product(Admin admin, String name, String category, int price, int stock, String description, ProductStatus status ) {
+    public Product(Admin admin, String name, ProductCategory category, int price, int stock,
+                   String description, ProductStatus status ) {
         this.admin = admin;
         this.name = name;
         this.category = category;
@@ -36,7 +39,7 @@ public class Product extends BaseEntity {
         this.status = status;
     }
 
-    public void updateInfo(String name, String category, int price) {
+    public void updateInfo(String name, ProductCategory category, int price) {
         this.name = name;
         this.category = category;
         this.price = price;
