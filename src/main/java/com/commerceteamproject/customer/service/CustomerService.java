@@ -27,7 +27,7 @@ public class CustomerService {
     public PageResponse<GetCustomerListResponse> findAll(String keyword, CustomerStatus status, Pageable pageable) {
 
         // pageable sort 검증
-        Sort.Order order = pageable.getSort().iterator().next();;
+        Sort.Order order = pageable.getSort().iterator().next();
         String property = order.getProperty();
         if (!CustomerSortBy.exists(property)) {
             throw new InvalidParameterException("잘못된 정렬 기준입니다.");

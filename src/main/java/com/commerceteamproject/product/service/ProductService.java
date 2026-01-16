@@ -1,5 +1,7 @@
 package com.commerceteamproject.product.service;
 
+import com.commerceteamproject.common.dto.PageResponse;
+import com.commerceteamproject.common.exception.InvalidParameterException;
 import com.commerceteamproject.product.dto.*;
 import com.commerceteamproject.product.entity.Product;
 import com.commerceteamproject.product.entity.ProductStatus;
@@ -7,12 +9,10 @@ import com.commerceteamproject.product.repository.ProductRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -44,37 +44,25 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProductGetResponse> getAll(String category, String sort, String keyword, int page, int size, String sortBy, String order ) {
-
-        Sort sortCondition = Sort.by("modifiedAt").descending();
-
-        if ("price".equals(sort)) {
-            sortCondition = Sort.by("price").descending();
-        } else if ("stock".equals(sort)) {
-            sortCondition = Sort.by("stock").descending();
-        }
-
-        List<Product> products;
-        if (category != null && !category.isEmpty()) {
-            products = productRepository.findAllByCategory(category, sortCondition);
-        } else {
-            products = productRepository.findAll(sortCondition);
-        }
-
-        List<ProductGetResponse> dtos = new ArrayList<>();
-        for (Product product : products) {
-            dtos.add(new ProductGetResponse(
-                    product.getId(),
-                    product.getName(),
-                    product.getCategory(),
-                    product.getPrice(),
-                    product.getStock(),
-                    product.getDescription(),
-                    product.getStatus()
-            ));
-        }
-
-        return dtos;
+    public PageResponse<ProductListItemResponse> getProducts(
+            String keyword, ProductStatus productStatus, Pageable pageable) {
+        List<String> allowedProperties = List.of("price", "stock", "createdAt");
+        pageable.getSort().forEach(order -> {
+            if (!allowedProperties.contains(order.getProperty())) {
+                throw new InvalidParameterException("잘못된 정렬 기준입니다.");
+            }
+        });
+        Page<Product> products = productRepository.findByKeywordAndStatus(keyword, productStatus, pageable);
+        Page<ProductListItemResponse> page = products.map(p -> new ProductListItemResponse(
+                p.getId(),
+                p.getName(),
+                p.getCategory(),
+                p.getPrice(),
+                p.getStock(),
+                p.getStatus(),
+                p.getCreatedAt()
+        ));
+        return new PageResponse<>(page);
     }
 
     @Transactional
@@ -137,37 +125,6 @@ public class ProductService {
                 product.getStock(),
                 product.getStatus()
         );
-    }
-
-    @Transactional(readOnly = true)
-    public ProductListResponse getProducts(
-            int page,
-            int size
-    ) {
-        PageRequest pageRequest = PageRequest.of(page - 1, size, Sort.by("createdAt").descending());
-
-        Page<Product> productPage = productRepository.findAll(pageRequest);
-
-        List<ProductListItemResponse> items = productPage.getContent()
-                .stream()
-                .map(product -> new ProductListItemResponse(
-                        product.getId(),
-                        product.getName(),
-                        product.getCategory(),
-                        product.getPrice(),
-                        product.getStock(),
-                        product.getStatus(),
-                        product.getCreatedAt()))
-                        .toList();
-
-        ProductPageInfo pageInfo = new ProductPageInfo(
-                page,
-                size,
-                productPage.getTotalElements(),
-                productPage.getTotalPages()
-        );
-
-        return new ProductListResponse(items, pageInfo);
     }
 
     public void delete(Long productsId) {
