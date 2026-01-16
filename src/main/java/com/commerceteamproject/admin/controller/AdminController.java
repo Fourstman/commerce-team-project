@@ -47,9 +47,10 @@ public class AdminController {
     // 관리자 리스트 조회
     @GetMapping("/admins")
     public ResponseEntity<AdminListResponse> getAdmins(
+            @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin loginAdmin,
             AdminListRequest request
     ) {
-        return ResponseEntity.ok(adminService.findAdmins(request));
+        return ResponseEntity.ok(adminService.findAdmins(loginAdmin, request));
     }
 
     // [관리자 상세 조회] : 특정 관리자의 상세 정보를 조회합니다.
@@ -91,9 +92,6 @@ public class AdminController {
                 .status(HttpStatus.OK)
                 .body(adminService.changeStatus(adminId, request));
     }
-
-
-
 
     // 관리자 승인/거부
     //      관리자 승인

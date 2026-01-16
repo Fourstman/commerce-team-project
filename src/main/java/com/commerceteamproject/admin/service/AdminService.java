@@ -2,6 +2,7 @@ package com.commerceteamproject.admin.service;
 
 import com.commerceteamproject.admin.dto.*;
 import com.commerceteamproject.admin.entity.Admin;
+import com.commerceteamproject.admin.entity.AdminRole;
 import com.commerceteamproject.admin.exception.*;
 import com.commerceteamproject.admin.repository.AdminRepository;
 import com.commerceteamproject.config.PasswordEncoder;
@@ -74,8 +75,23 @@ public class AdminService {
     }
 
     // 관리자 리스트 조회(쿼리 파라미터 사용)
+    // 세션 확인 추가 : 포스트맨은 세션을 공유해버린당께...
     @Transactional(readOnly = true)
-    public AdminListResponse findAdmins(AdminListRequest request) {
+    public AdminListResponse findAdmins(
+            SessionAdmin loginAdmin,
+            AdminListRequest request
+    ) {
+        if (loginAdmin == null) {
+            throw new UnauthorizedException("로그인이 필요합니다.");
+        }
+
+        Admin admin = adminRepository.findById(loginAdmin.getId())
+                .orElseThrow(() -> new UnauthorizedException("유효하지 않은 세션입니다."));
+        // 여기서 오타남. loginAdmin -> admin : 현재 사용자 체크
+        if (admin.getAdminRole() != AdminRole.SUPER) {
+            throw new ForbiddenException("슈퍼 관리자만 조회 가능합니다.");
+        }
+
 
         Sort sort = request.getDirection().equalsIgnoreCase("asc")
                 ? Sort.by(request.getSortBy()).ascending()
