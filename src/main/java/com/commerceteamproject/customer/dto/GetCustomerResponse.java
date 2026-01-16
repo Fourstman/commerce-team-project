@@ -11,13 +11,17 @@ public class GetCustomerResponse {
     private final String email;
     private final String phone;
     private final String status;
+    private final int totalOrderCount;
+    private final int totalOrderAmount;
     private final LocalDateTime createdAt;
 
-    public GetCustomerResponse(String name, String email, String phone, String status, LocalDateTime createdAt) {
+    public GetCustomerResponse(String name, String email, String phone, String status, int totalOrderCount, int totalOrderAmount, LocalDateTime createdAt) {
         this.name = name;
         this.email = email;
         this.phone = phone;
         this.status = status;
+        this.totalOrderCount = totalOrderCount;
+        this.totalOrderAmount = totalOrderAmount;
         this.createdAt = createdAt;
     }
 }

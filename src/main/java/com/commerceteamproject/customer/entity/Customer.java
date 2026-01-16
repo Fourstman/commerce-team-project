@@ -4,7 +4,6 @@ import com.commerceteamproject.common.entity.BaseEntity;
 import com.commerceteamproject.customer.dto.UpdateCustomerInformationRequest;
 import com.commerceteamproject.customer.dto.UpdateCustomerStatusRequest;
 import jakarta.persistence.*;
-import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,6 +24,9 @@ public class Customer extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private CustomerStatus status;
 
+    private int totalOrderAmount = 0;
+    private int totalOrderCount = 0;
+
     public void updateInformation(UpdateCustomerInformationRequest request) {
         if (request.getName() != null && !request.getName().isBlank()) {
             this.name = request.getName();
@@ -39,5 +41,15 @@ public class Customer extends BaseEntity {
 
     public void updateStatus(UpdateCustomerStatusRequest request) {
         this.status = request.getStatus();
+    }
+
+    public void addOrder(int amount) {
+        this.totalOrderAmount += amount;
+        this.totalOrderCount++;
+    }
+
+    public void cancelOrder(int amount) {
+        this.totalOrderAmount -= amount;
+        this.totalOrderCount--;
     }
 }

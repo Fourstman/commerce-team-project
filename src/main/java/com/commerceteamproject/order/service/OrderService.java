@@ -64,6 +64,7 @@ public class OrderService {
                 admin
         );
         Order savedOrder = orderRepository.save(order);
+        customer.addOrder(savedOrder.getAmount());
         return new CreateOrderResponse(
                 savedOrder.getId(),
                 savedOrder.getOrderNumber(),
@@ -153,6 +154,7 @@ public class OrderService {
         }
         order.canceledOrder(request.canceledReason);
         order.updateOrderStatus(OrderStatus.CANCEL);
+        order.getCustomer().cancelOrder(order.getAmount());
         order.getProduct().updateStock(order.getProduct().getStock() + order.getQuantity());
         // 주문 수량은 1 이상 -> 단종, 판매중은 유지, 품절은 상태 변경
         if (order.getProduct().getStatus() == ProductStatus.SOLD_OUT) {

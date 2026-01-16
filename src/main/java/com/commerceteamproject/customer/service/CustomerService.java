@@ -44,6 +44,8 @@ public class CustomerService {
                 customer.getEmail(),
                 customer.getPhone(),
                 customer.getStatus().getDescription(),
+                customer.getTotalOrderCount(),
+                customer.getTotalOrderAmount(),
                 customer.getCreatedAt()
         ));
         return new PageResponse<>(page);
@@ -60,6 +62,8 @@ public class CustomerService {
                 customer.getEmail(),
                 customer.getPhone(),
                 customer.getStatus().getDescription(),
+                customer.getTotalOrderCount(),
+                customer.getTotalOrderAmount(),
                 customer.getCreatedAt()
         );
     }
