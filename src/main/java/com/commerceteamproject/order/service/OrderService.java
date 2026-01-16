@@ -5,7 +5,6 @@ import com.commerceteamproject.admin.entity.Admin;
 import com.commerceteamproject.admin.repository.AdminRepository;
 import com.commerceteamproject.common.dto.PageResponse;
 import com.commerceteamproject.common.exception.InvalidParameterException;
-import com.commerceteamproject.common.exception.LoginRequiredException;
 import com.commerceteamproject.customer.entity.Customer;
 import com.commerceteamproject.customer.exception.CustomerNotFoundException;
 import com.commerceteamproject.customer.repository.CustomerRepository;
@@ -18,6 +17,7 @@ import com.commerceteamproject.product.entity.Product;
 import com.commerceteamproject.product.entity.ProductStatus;
 import com.commerceteamproject.product.exception.ProductNotFoundException;
 import com.commerceteamproject.product.repository.ProductRepository;
+import com.commerceteamproject.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +33,7 @@ public class OrderService {
     private final AdminRepository adminRepository;
     private final CustomerRepository customerRepository;
     private final ProductRepository productRepository;
+    private final ProductService productService;
 
     // CS 주문 생성
     @Transactional
@@ -52,6 +53,10 @@ public class OrderService {
             throw new IllegalStateException("해당 상품은 단종되었습니다.");
         } else if (product.getStock() < request.getQuantity()) {
             throw new IllegalStateException("남은 재고보다 주문 수량이 많습니다.");
+        }
+        product.updateStock(product.getStock() - request.getQuantity());
+        if (product.getStock() == 0) {
+            product.changeStatus(ProductStatus.SOLD_OUT);
         }
         Order order = new Order(
                 customer,
