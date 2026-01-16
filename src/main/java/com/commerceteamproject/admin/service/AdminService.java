@@ -236,4 +236,31 @@ public class AdminService {
         return new AdminPasswordUpdateResponse(admin.getPassword());
     }
 
+
+    @Transactional
+    public FindOwnAdminResponse findOwn(SessionAdmin sessionAdmin) {
+        Admin admin = adminRepository.findById(sessionAdmin.getId()).orElseThrow(
+                () -> new IllegalStateException("존재하지 않는 유저입니다.")
+        );
+        return new FindOwnAdminResponse(
+                admin.getName(),
+                admin.getEmail(),
+                admin.getPhoneNumber()
+        );
+    }
+
+    @Transactional
+    public UpdateOwnAdminResponse updateOwn(SessionAdmin sessionAdmin, UpdateOwnAdminRequest request) {
+        Admin admin = adminRepository.findById(sessionAdmin.getId()).orElseThrow(
+                () -> new IllegalStateException("존재하지 않는 유저입니다.")
+        );
+        admin.updateOwn(
+                request.getName(),
+                request.getEmail(),
+                request.getPhoneNumber());
+        return new UpdateOwnAdminResponse(
+                admin.getName(),
+                admin.getEmail(),
+                admin.getPhoneNumber());
+    }
 }

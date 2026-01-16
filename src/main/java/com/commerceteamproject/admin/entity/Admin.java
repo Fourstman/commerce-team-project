@@ -1,6 +1,6 @@
 package com.commerceteamproject.admin.entity;
 
-import com.commerceteamproject.common.BaseEntity;
+import com.commerceteamproject.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -13,7 +13,8 @@ import java.time.LocalDateTime;
 @Table(name = "admins")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class Admin extends BaseEntity {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     // `이름`, `이메일`, '전화번호', `전화번호`, `역할`, `상태`, '승인일'
@@ -26,12 +27,12 @@ public class Admin extends BaseEntity {
     private String password;
     @Column(nullable = false)
     private String phoneNumber;
-    
+
     @Enumerated(EnumType.STRING)    // Enum 타입 저장 시 문자열 그대로 저장
     private AdminRole adminRole;
     @Enumerated(EnumType.STRING)
     private AdminStatus adminStatus;
-    
+
     private LocalDateTime approvedAt; // 승인일
 
     private  LocalDateTime rejectedAt;  // 거부 일시
@@ -58,13 +59,20 @@ public class Admin extends BaseEntity {
     // 관리자 역할 변경
     public void changeRole(AdminRole adminRole) {
         this.adminRole = adminRole;
+        this.adminStatus = AdminStatus.ACTIVATION;
+    }
+
+    public void updateOwn(String name, String email, String phoneNumber) {
+        this.name = name;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
     }
 
     // 관리자 상태 변경
     public void changeStatus(AdminStatus adminStatus) {
         this.adminStatus = adminStatus;
     }
-    
+
     // 관리자 승인
     public void approve() {
         if (this.adminStatus != AdminStatus.PENDING) {

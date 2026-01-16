@@ -26,9 +26,15 @@ public class Customer extends BaseEntity {
     private CustomerStatus status;
 
     public void updateInformation(UpdateCustomerInformationRequest request) {
-        this.name = request.getName();
-        this.email = request.getEmail();
-        this.phone = request.getPhone();
+        if (request.getName() != null && !request.getName().isBlank()) {
+            this.name = request.getName();
+        }
+        if (request.getEmail() != null && !request.getEmail().isBlank()) {
+            this.email = request.getEmail();
+        }
+        if (request.getPhone() != null) {
+            this.phone = request.getPhone();
+        }
     }
 
     public void updateStatus(UpdateCustomerStatusRequest request) {
