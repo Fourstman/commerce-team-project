@@ -2,6 +2,7 @@ package com.commerceteamproject.product.service;
 
 import com.commerceteamproject.product.dto.*;
 import com.commerceteamproject.product.entity.Product;
+import com.commerceteamproject.product.entity.ProductStatus;
 import com.commerceteamproject.product.repository.ProductRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +42,7 @@ public class ProductService {
     }
 
     @Transactional(readOnly = true)
-    public List<ProductGetResponse> getAll(String category, String sort) {
+    public List<ProductGetResponse> getAll(String category, String sort, String keyword, int page, int size, String sortBy, String order ) {
 
         Sort sortCondition = Sort.by("modifiedAt").descending();
 
@@ -92,18 +93,46 @@ public class ProductService {
     }
 
     @Transactional
-    public ProductUpdateResponse update(Long productsId, @Valid ProductUpdateRequest request) { //
-        Product product = productRepository.findById(productsId).orElseThrow(
-                () -> new IllegalArgumentException(" 없는 상품 입니다.")
+    public ProductUpdateResponse updateProductInfo(
+            Long productId,
+            @Valid ProductUpdateRequest request
+    ) {
+        Product product = productRepository.findById(productId).orElseThrow(
+                () -> new IllegalArgumentException("없는 상품입니다.")
         );
-        product.update(request.getName(), request.getCategory(), request.getPrice(), request.getStock(), request.getDescription(),request.getStatus());
+
+        product.updateInfo(
+                request.getName(),
+                request.getCategory(),
+                request.getPrice()
+        );
+
         return new ProductUpdateResponse(
                 product.getId(),
                 product.getName(),
                 product.getCategory(),
-                product.getPrice(),
+                product.getPrice());
+    }
+
+    @Transactional
+    public ProductStockUpdateResponse updateStock(Long productId, ProductStockUpdateRequest request
+    ) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new IllegalArgumentException("없는 상품입니다."));
+
+        product.updateStock(request.getStock());
+
+        if (product.getStatus() != ProductStatus.DISCONTINUED) {
+            if (request.getStock() <= 0) {
+                product.changeStatus(ProductStatus.SOLD_OUT);
+            } else {
+                product.changeStatus(ProductStatus.SALE);
+            }
+        }
+
+        return new ProductStockUpdateResponse(
+                product.getId(),
                 product.getStock(),
-                product.getDescription(),
                 product.getStatus()
         );
     }

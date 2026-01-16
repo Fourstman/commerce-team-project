@@ -20,7 +20,7 @@ public class ProductController {
 
     private final ProductService productService;
 
-    @PostMapping("/products") // 상품 생성 > products로 생성
+    @PostMapping("/products") // 상품 생성
     public ResponseEntity<ProductCreateResponse> create(
             @RequestBody ProductCreateRequest request,
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin
@@ -38,11 +38,11 @@ public class ProductController {
 
     }
 
-    @GetMapping("/products") // 상품 전체 조회 > products로 조회
+    @GetMapping("/products") // 상품 전체 조회
     public ResponseEntity<List<ProductGetResponse>> getAll(
             @RequestParam(required = false) String category,
             @RequestParam(required = false) String sort,
-            @RequestParam(required = false) String Keyword,
+            @RequestParam(required = false) String keyword,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "createdAt") String sortBy,
@@ -58,14 +58,14 @@ public class ProductController {
         if (sessionAdmin.getAdminRole() == AdminRole.CS) {
             throw new AccessDeniedException("권한이 없습니다.");
         }
-        List<ProductGetResponse> products = productService.getAll(category, sort);
+        List<ProductGetResponse> products = productService.getAll(category, sort, keyword, page, size, sortBy, order);
         return ResponseEntity.status(HttpStatus.OK).body(products);
 
     }
 
-    @GetMapping("/products/{productsId}") // 상품 단건 조회 > products / productsId
+    @GetMapping("/products/{productId}") // 상품 단건 조회
     public ResponseEntity<ProductGetResponse> getById(
-            @PathVariable Long productsId,
+            @PathVariable Long productId,
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin
     ) {
         if (sessionAdmin == null) {
@@ -76,13 +76,13 @@ public class ProductController {
             throw new AccessDeniedException("권한이 없습니다.");
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(productService.getById(productsId));
+        return ResponseEntity.status(HttpStatus.OK).body(productService.getById(productId));
     }
 
-    @PutMapping("/products/{productsId}") // 상품 수정 > products / productsId
-    public ResponseEntity<ProductUpdateResponse> update(
+    @PutMapping("/products/{productId}") // 상품 수정
+    public ResponseEntity<ProductUpdateResponse> updateProductInfo(
             @RequestBody ProductUpdateRequest request,
-            @PathVariable Long productsId,
+            @PathVariable Long productId,
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin
     ) {
         if (sessionAdmin == null) {
@@ -92,10 +92,26 @@ public class ProductController {
         if (sessionAdmin.getAdminRole() == AdminRole.CS) {
             throw new AccessDeniedException("권한이 없습니다.");
         }
-        return ResponseEntity.status(HttpStatus.OK).body(productService.update(productsId, request));
+        return ResponseEntity.status(HttpStatus.OK).body(productService.updateProductInfo(productId, request));
     }
 
-    @DeleteMapping("/products/{productsId}") // 상품 삭제 > products / productsId
+    @PatchMapping("/products/{productId}/stock")
+    public ResponseEntity<ProductStockUpdateResponse> updateStock(
+            @PathVariable Long productId,
+            @RequestBody ProductStockUpdateRequest request,
+            @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin
+    ) {
+        if (sessionAdmin == null) {
+            throw new LoginRequiredException("로그인이 필요합니다.");
+        }
+
+        if (sessionAdmin.getAdminRole() == AdminRole.CS) {
+            throw new AccessDeniedException("권한이 없습니다.");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(productService.updateStock(productId, request));
+    }
+
+    @DeleteMapping("/products/{productsId}") // 상품 삭제
     public ResponseEntity<Void> delete(
             @PathVariable Long productsId,
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin
