@@ -21,6 +21,7 @@ public class ProductService {
 
     private final ProductRepository productRepository;
 
+    @Transactional
     public ProductCreateResponse save(ProductCreateRequest request) {
         Product product = new Product(
                 request.getName(),
@@ -65,7 +66,7 @@ public class ProductService {
         return new PageResponse<>(page);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public ProductGetResponse getById(Long productId) {
         Product product = productRepository.findById(productId).orElseThrow(
                 () -> new IllegalArgumentException("없는 상품 입니다.")
@@ -127,6 +128,7 @@ public class ProductService {
         );
     }
 
+    @Transactional
     public void delete(Long productsId) {
         boolean existence = productRepository.existsById(productsId);
         if (!existence) {
