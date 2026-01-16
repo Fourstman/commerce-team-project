@@ -52,4 +52,8 @@ public class Order extends BaseEntity {
         this.admin = admin;
         this.orderStatus = OrderStatus.PREPARE;
     }
+
+    public void updateOrderStatus(OrderStatus orderStatus) {
+        this.orderStatus = orderStatus;
+    }
 }
