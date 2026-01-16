@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
 
@@ -12,6 +14,8 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "admins")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLRestriction("deleted_at is NULL")
+@SQLDelete(sql = "UPDATE admins SET deleted_at = NOW() WHERE id = ?")
 public class Admin extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,6 +41,8 @@ public class Admin extends BaseEntity {
 
     private  LocalDateTime rejectedAt;  // 거부 일시
     private String rejectReason;    // 거부 사유
+
+    private LocalDateTime deletedAt;
 
 
     public Admin(String name, String email, String password, String phoneNumber,

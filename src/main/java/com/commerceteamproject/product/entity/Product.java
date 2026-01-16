@@ -6,11 +6,18 @@ import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
+import org.hibernate.annotations.SQLRestriction;
+
+import java.time.LocalDateTime;
+
 
 @Entity
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "products")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@SQLRestriction("deleted_at is NULL")
+@SQLDelete(sql = "UPDATE products SET deleted_at = NOW() WHERE id = ?")
 public class Product extends BaseEntity {
 
     @Id
@@ -27,6 +34,8 @@ public class Product extends BaseEntity {
     private String description;
     @Enumerated(EnumType.STRING)
     private ProductStatus status;
+
+    private LocalDateTime deletedAt;
 
     public Product(Admin admin, String name, ProductCategory category, int price, int stock,
                    String description, ProductStatus status ) {
