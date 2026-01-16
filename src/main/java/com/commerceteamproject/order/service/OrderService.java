@@ -83,10 +83,7 @@ public class OrderService {
     // 주문 리스트 조회
     @Transactional(readOnly = true)
     public PageResponse<GetOrderListResponse> findOrders(
-            String keyword, OrderStatus status, Pageable pageable, SessionAdmin sessionAdmin) {
-        if (sessionAdmin == null) {
-            throw new LoginRequiredException("로그인이 필요합니다.");
-        }
+            String keyword, OrderStatus status, Pageable pageable) {
         List<String> allowedProperties = List.of("quantity", "amount", "createdAt");
         pageable.getSort().forEach(order -> {
             if (!allowedProperties.contains(order.getProperty())) {

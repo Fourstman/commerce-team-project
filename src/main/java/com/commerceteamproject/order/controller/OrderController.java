@@ -45,7 +45,10 @@ public class OrderController {
             @RequestParam(required = false)OrderStatus status,
             @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
             @SessionAttribute(name = "loginAdmin", required = false)SessionAdmin sessionAdmin) {
-        return ResponseEntity.status(HttpStatus.OK).body(orderService.findOrders(keyword, status, pageable, sessionAdmin));
+        if (sessionAdmin == null) {
+            throw new LoginRequiredException("로그인이 필요합니다.");
+        }
+        return ResponseEntity.status(HttpStatus.OK).body(orderService.findOrders(keyword, status, pageable));
     }
 
     // 주문 상세 조회
