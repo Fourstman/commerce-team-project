@@ -1,13 +1,19 @@
 package com.commerceteamproject.product.controller;
 
 import com.commerceteamproject.admin.dto.SessionAdmin;
-import com.commerceteamproject.admin.enitity.AdminRole;
+import com.commerceteamproject.admin.entity.AdminRole;
+import com.commerceteamproject.common.dto.PageResponse;
 import com.commerceteamproject.common.exception.AccessDeniedException;
 import com.commerceteamproject.common.exception.LoginRequiredException;
 import com.commerceteamproject.product.dto.*;
+import com.commerceteamproject.product.entity.ProductCategory;
+import com.commerceteamproject.product.entity.ProductStatus;
 import com.commerceteamproject.product.service.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -36,22 +42,22 @@ public class ProductController {
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin
     ) {
         validateAdmin(sessionAdmin);
-        ProductCreateResponse product = productService.save(request);
+        ProductCreateResponse product = productService.save(sessionAdmin, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(product);
     }
 
     @GetMapping
-    public ResponseEntity<ProductListResponse> getProducts(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
+    public ResponseEntity<PageResponse<ProductListItemResponse>> getProducts(
+            @RequestParam(required = false)String keyword,
+            @RequestParam(required = false) ProductCategory productCategory,
+            @RequestParam(required = false)ProductStatus productStatus,
+            @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin
     ) {
         if (sessionAdmin == null) {
             throw new LoginRequiredException("로그인이 필요합니다.");
         }
-        return ResponseEntity.ok(
-                productService.getProducts(page, size)
-        );
+        return ResponseEntity.ok(productService.getProducts(keyword, productCategory, productStatus, pageable));
     }
 
     @GetMapping("/{productId}") // 상품 단건 조회
