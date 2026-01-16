@@ -2,6 +2,7 @@ package com.commerceteamproject.admin.service;
 
 import com.commerceteamproject.admin.dto.*;
 import com.commerceteamproject.admin.entity.Admin;
+import com.commerceteamproject.admin.entity.AdminRole;
 import com.commerceteamproject.admin.exception.*;
 import com.commerceteamproject.admin.repository.AdminRepository;
 import com.commerceteamproject.common.dto.PageResponse;
@@ -76,7 +77,21 @@ public class AdminService {
 
     // 관리자 리스트 조회(쿼리 파라미터 사용)
     @Transactional(readOnly = true)
-    public PageResponse<AdminListItemResponse> findAdmins(AdminListRequest request) {
+    public PageResponse<AdminListItemResponse> findAdmins(
+            SessionAdmin loginAdmin,
+            AdminListRequest request
+    ) {
+        if (loginAdmin == null) {
+            throw new UnauthorizedException("로그인이 필요합니다.");
+        }
+
+        Admin admin = adminRepository.findById(loginAdmin.getId())
+                .orElseThrow(() -> new UnauthorizedException("유효하지 않은 세션입니다."));
+
+        if (admin.getAdminRole() != AdminRole.SUPER) {
+            throw new ForbiddenException("슈퍼 관리자만 조회 가능합니다.");
+        }
+
 
         Sort sort = request.getDirection().equalsIgnoreCase("asc")
                 ? Sort.by(request.getSortBy()).ascending()
@@ -95,9 +110,11 @@ public class AdminService {
                 pageable
         );
 
-        Page<AdminListItemResponse> admins = page.map(AdminListItemResponse::new);
+        List<AdminListItemResponse> admins = page.getContent().stream()
+                .map(AdminListItemResponse::new)
+                .toList();
 
-        return new PageResponse<>(admins);
+        return PageResponse.of(page, admins);
     }
 
     // 관리자 상세 조회

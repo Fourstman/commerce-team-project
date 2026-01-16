@@ -1,7 +1,6 @@
 package com.commerceteamproject.admin.controller;
 
 import com.commerceteamproject.admin.dto.*;
-import com.commerceteamproject.admin.dto.*;
 import com.commerceteamproject.admin.entity.AdminRole;
 import com.commerceteamproject.admin.service.AdminService;
 import com.commerceteamproject.common.dto.PageResponse;
@@ -50,9 +49,10 @@ public class AdminController {
     // 관리자 리스트 조회
     @GetMapping("/admins")
     public ResponseEntity<PageResponse<AdminListItemResponse>> getAdmins(
+            @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin loginAdmin,
             AdminListRequest request
     ) {
-        return ResponseEntity.ok(adminService.findAdmins(request));
+        return ResponseEntity.ok(adminService.findAdmins(loginAdmin, request));
     }
 
     // [관리자 상세 조회] : 특정 관리자의 상세 정보를 조회합니다.
@@ -95,9 +95,6 @@ public class AdminController {
                 .body(adminService.changeStatus(adminId, request));
     }
 
-
-
-
     // 관리자 승인/거부
     //      관리자 승인
     @PutMapping("/admins/{adminId}/approve")
@@ -109,13 +106,13 @@ public class AdminController {
         if (loginAdmin == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
         }
-
+    
         // 일반관리자(RUN, CS)는 권한 없음
         if (loginAdmin.getAdminRole() != AdminRole.SUPER) {
             return ResponseEntity.status(HttpStatus.FORBIDDEN)
                     .body(null); // "접근 권한이 없습니다"
         }
-
+    
         return ResponseEntity.ok(adminService.approve(adminId));
     }
 
