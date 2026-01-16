@@ -52,7 +52,7 @@ public class ProductController {
         );
     }
 
-    @GetMapping("{productId}") // 상품 단건 조회
+    @GetMapping("{/productId}") // 상품 단건 조회
     public ResponseEntity<ProductGetResponse> getById(
             @PathVariable Long productId,
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin
@@ -61,7 +61,7 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(productService.getById(productId));
     }
 
-    @PutMapping("{productId}") // 상품 수정
+    @PutMapping("{/productId}") // 상품 수정
     public ResponseEntity<ProductUpdateResponse> updateProductInfo(
             @Valid @RequestBody ProductUpdateRequest request,
             @PathVariable Long productId,
@@ -71,7 +71,7 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(productService.updateProductInfo(productId, request));
     }
 
-    @PatchMapping("{productId}/stock")
+    @PatchMapping("{/productId}/stock")
     public ResponseEntity<ProductStockUpdateResponse> updateStock(
             @PathVariable Long productId,
             @RequestBody ProductStockUpdateRequest request,
@@ -81,7 +81,7 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(productService.updateStock(productId, request));
     }
 
-    @DeleteMapping("{productId}") // 상품 삭제
+    @DeleteMapping("{/productId}") // 상품 삭제
     public ResponseEntity<Void> delete(
             @PathVariable Long productId,
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin
