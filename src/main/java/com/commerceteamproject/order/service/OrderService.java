@@ -15,6 +15,7 @@ import com.commerceteamproject.order.dto.GetOneOrderResponse;
 import com.commerceteamproject.order.dto.GetOrderListResponse;
 import com.commerceteamproject.order.entity.Order;
 import com.commerceteamproject.order.entity.OrderStatus;
+import com.commerceteamproject.order.exception.OrderNotFoundException;
 import com.commerceteamproject.order.repository.OrderRepository;
 import com.commerceteamproject.product.entity.Product;
 import com.commerceteamproject.product.entity.ProductStatus;
@@ -111,7 +112,7 @@ public class OrderService {
     @Transactional(readOnly = true)
     public GetOneOrderResponse findOne(Long orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(
-                () -> new IllegalStateException("존재하지 않는 주문입니다.")
+                () -> new OrderNotFoundException("존재하지 않는 주문입니다.")
         );
         return new GetOneOrderResponse(
                 order.getOrderNumber(),
