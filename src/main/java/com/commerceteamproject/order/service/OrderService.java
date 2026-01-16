@@ -63,6 +63,7 @@ public class OrderService {
                 admin
         );
         Order savedOrder = orderRepository.save(order);
+        customer.addOrder(savedOrder.getAmount());
         return new CreateOrderResponse(
                 savedOrder.getId(),
                 savedOrder.getOrderNumber(),
