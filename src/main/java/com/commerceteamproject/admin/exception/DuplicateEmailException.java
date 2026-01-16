@@ -8,4 +8,3 @@ public class DuplicateEmailException extends ServiceException {
         super(message, HttpStatus.BAD_REQUEST);
     }
 }
-

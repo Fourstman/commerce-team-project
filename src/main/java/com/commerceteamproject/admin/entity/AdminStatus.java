@@ -1,4 +1,4 @@
-package com.commerceteamproject.admin.enitity;
+package com.commerceteamproject.admin.entity;
 
 public enum AdminStatus {
     // 활성화, 비활성화, 정지, 승인대기, 거부
