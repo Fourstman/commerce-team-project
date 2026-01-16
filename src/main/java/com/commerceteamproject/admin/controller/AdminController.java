@@ -3,6 +3,7 @@ package com.commerceteamproject.admin.controller;
 import com.commerceteamproject.admin.dto.*;
 import com.commerceteamproject.admin.entity.AdminRole;
 import com.commerceteamproject.admin.service.AdminService;
+import com.commerceteamproject.common.dto.PageResponse;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -46,7 +47,7 @@ public class AdminController {
 
     // 관리자 리스트 조회
     @GetMapping("/admins")
-    public ResponseEntity<AdminListResponse> getAdmins(
+    public ResponseEntity<PageResponse<AdminListItemResponse>> getAdmins(
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin loginAdmin,
             AdminListRequest request
     ) {
