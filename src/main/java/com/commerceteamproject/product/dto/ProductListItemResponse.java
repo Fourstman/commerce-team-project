@@ -15,9 +15,11 @@ public class ProductListItemResponse {
     private final int stock;
     private final ProductStatus status;
     private final LocalDateTime createdAt;
+    private final String createdByAdminName;
 
-    public ProductListItemResponse(Long id, String name, String category, int price, int stock, ProductStatus status, LocalDateTime createdAt) {
-
+    public ProductListItemResponse(
+            Long id, String name, String category, int price, int stock, ProductStatus status,
+            LocalDateTime createdAt, String createdByAdminName) {
         this.id = id;
         this.name = name;
         this.category = category;
@@ -25,7 +27,7 @@ public class ProductListItemResponse {
         this.stock = stock;
         this.status = status;
         this.createdAt = createdAt;
-
+        this.createdByAdminName = createdByAdminName;
     }
 
 }

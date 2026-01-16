@@ -1,10 +1,15 @@
 package com.commerceteamproject.product.service;
 
+import com.commerceteamproject.admin.dto.SessionAdmin;
+import com.commerceteamproject.admin.entity.Admin;
+import com.commerceteamproject.admin.repository.AdminRepository;
 import com.commerceteamproject.common.dto.PageResponse;
 import com.commerceteamproject.common.exception.InvalidParameterException;
+import com.commerceteamproject.common.exception.LoginRequiredException;
 import com.commerceteamproject.product.dto.*;
 import com.commerceteamproject.product.entity.Product;
 import com.commerceteamproject.product.entity.ProductStatus;
+import com.commerceteamproject.product.exception.ProductNotFoundException;
 import com.commerceteamproject.product.repository.ProductRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,10 +25,15 @@ import java.util.List;
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final AdminRepository adminRepository;
 
     @Transactional
-    public ProductCreateResponse save(ProductCreateRequest request) {
+    public ProductCreateResponse save(SessionAdmin sessionAdmin, ProductCreateRequest request) {
+        Admin admin = adminRepository.findById(sessionAdmin.getId()).orElseThrow(
+                () -> new LoginRequiredException("유효하지 않은 세션입니다.")
+        );
         Product product = new Product(
+                admin,
                 request.getName(),
                 request.getCategory(),
                 request.getPrice(),
@@ -61,7 +71,8 @@ public class ProductService {
                 p.getPrice(),
                 p.getStock(),
                 p.getStatus(),
-                p.getCreatedAt()
+                p.getCreatedAt(),
+                p.getAdmin().getName()
         ));
         return new PageResponse<>(page);
     }
@@ -69,7 +80,7 @@ public class ProductService {
     @Transactional(readOnly = true)
     public ProductGetResponse getById(Long productId) {
         Product product = productRepository.findById(productId).orElseThrow(
-                () -> new IllegalArgumentException("없는 상품 입니다.")
+                () -> new ProductNotFoundException("없는 상품 입니다.")
         );
 
         return new ProductGetResponse(
@@ -89,7 +100,7 @@ public class ProductService {
             @Valid ProductUpdateRequest request
     ) {
         Product product = productRepository.findById(productId).orElseThrow(
-                () -> new IllegalArgumentException("없는 상품입니다.")
+                () -> new ProductNotFoundException("없는 상품입니다.")
         );
 
         product.updateInfo(
@@ -109,7 +120,7 @@ public class ProductService {
     public ProductStockUpdateResponse updateStock(Long productId, ProductStockUpdateRequest request
     ) {
         Product product = productRepository.findById(productId)
-                .orElseThrow(() -> new IllegalArgumentException("없는 상품입니다."));
+                .orElseThrow(() -> new ProductNotFoundException("없는 상품입니다."));
 
         product.updateStock(request.getStock());
 
@@ -132,7 +143,7 @@ public class ProductService {
     public void delete(Long productsId) {
         boolean existence = productRepository.existsById(productsId);
         if (!existence) {
-            throw new IllegalArgumentException("없는 상품 입니다.");
+            throw new ProductNotFoundException("없는 상품 입니다.");
         }
         productRepository.deleteById(productsId);
     }

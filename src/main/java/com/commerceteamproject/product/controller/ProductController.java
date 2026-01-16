@@ -41,7 +41,7 @@ public class ProductController {
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin
     ) {
         validateAdmin(sessionAdmin);
-        ProductCreateResponse product = productService.save(request);
+        ProductCreateResponse product = productService.save(sessionAdmin, request);
         return ResponseEntity.status(HttpStatus.CREATED).body(product);
     }
 

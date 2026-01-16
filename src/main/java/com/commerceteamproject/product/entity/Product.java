@@ -1,5 +1,6 @@
 package com.commerceteamproject.product.entity;
 
+import com.commerceteamproject.admin.entity.Admin;
 import com.commerceteamproject.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -15,7 +16,9 @@ public class Product extends BaseEntity {
     @Id
     @GeneratedValue (strategy = GenerationType.IDENTITY)
     private Long id;
-
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "admin_id", nullable = false)
+    private Admin admin;
     private String name;
     private String category;
     private int price;
@@ -23,7 +26,8 @@ public class Product extends BaseEntity {
     private String description;
     private ProductStatus status;
 
-    public Product(String name, String category, int price, int stock, String description, ProductStatus status ) {
+    public Product(Admin admin, String name, String category, int price, int stock, String description, ProductStatus status ) {
+        this.admin = admin;
         this.name = name;
         this.category = category;
         this.price = price;
