@@ -126,14 +126,18 @@ public class OrderService {
         );
     }
 
-    // 주문 상태 변경 // 주문 상태가 취소일 경우 상태 변경 불가
+    // 주문 상태 변경 / 주문 상태가 취소일 경우 상태 변경 불가
     @Transactional
-    public UpdateOrderStatusResponse updateStatus(Long orderId, UpdateOrderStatusRequest request) {
+    public void updateStatus(Long orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(
                 () -> new OrderNotFoundException("존재하지 않는 주문입니다.")
         );
-        order.updateOrderStatus(request.getOrderStatus());
-        return new UpdateOrderStatusResponse(order.getOrderNumber(), order.getOrderStatus());
+        switch (order.getOrderStatus()) {
+            case CANCEL -> throw new IllegalStateException("취소된 상품은 상태를 변경할 수 없습니다.");
+            case PREPARE -> order.updateOrderStatus(OrderStatus.IN_DELIVERY);
+            case IN_DELIVERY -> order.updateOrderStatus(OrderStatus.COMPLETE);
+            case COMPLETE -> throw new IllegalStateException("배송 완료된 상품은 상태를 변경할 수 없습니다.");
+        }
     }
 
     // 주문 취소
@@ -142,7 +146,9 @@ public class OrderService {
         Order order = orderRepository.findById(orderId).orElseThrow(
                 () -> new OrderNotFoundException("존재하지 않는 주문입니다.")
         );
-        if (order.getOrderStatus() != OrderStatus.PREPARE) {
+        if (order.getOrderStatus() == OrderStatus.CANCEL) {
+            throw new IllegalStateException("이미 취소된 상품입니다.");
+        } else if (order.getOrderStatus() != OrderStatus.PREPARE) {
             throw new IllegalStateException("주문 취소는 준비 상태에만 가능합니다.");
         }
         order.canceledOrder(request.canceledReason);

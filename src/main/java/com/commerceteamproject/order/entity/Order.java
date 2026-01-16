@@ -35,8 +35,8 @@ public class Order extends BaseEntity {
     private Product product;
     private int quantity;
     private int amount;
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "admin_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "admin_id")
     private Admin admin;
     private OrderStatus orderStatus;
     private String canceledReason;

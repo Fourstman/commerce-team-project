@@ -62,14 +62,14 @@ public class OrderController {
 
     // 주문 상태 변경
     @PutMapping("/orders/{orderId}")
-    public ResponseEntity<UpdateOrderStatusResponse> updateOrderStatus(
+    public ResponseEntity<Void> updateOrderStatus(
             @PathVariable Long orderId,
-            @Valid @RequestBody UpdateOrderStatusRequest request,
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin) {
         if (sessionAdmin == null) {
             throw new LoginRequiredException("로그인이 필요합니다.");
         }
-        return ResponseEntity.status(HttpStatus.OK).body(orderService.updateStatus(orderId, request));
+        orderService.updateStatus(orderId);
+        return ResponseEntity.status(HttpStatus.OK).build();
     }
 
     // 주문 취소
