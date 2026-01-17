@@ -17,7 +17,6 @@ import com.commerceteamproject.product.entity.Product;
 import com.commerceteamproject.product.entity.ProductStatus;
 import com.commerceteamproject.product.exception.ProductNotFoundException;
 import com.commerceteamproject.product.repository.ProductRepository;
-import com.commerceteamproject.product.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,7 +32,6 @@ public class OrderService {
     private final AdminRepository adminRepository;
     private final CustomerRepository customerRepository;
     private final ProductRepository productRepository;
-    private final ProductService productService;
 
     // CS 주문 생성
     @Transactional
@@ -129,16 +127,40 @@ public class OrderService {
         );
     }
 
-    // 주문 상태 변경
+    // 주문 상태 변경 / 주문 상태가 취소일 경우 상태 변경 불가
     @Transactional
-    public UpdateOrderStatusResponse updateStatus(Long orderId, UpdateOrderStatusRequest request) {
+    public void updateStatus(Long orderId) {
         Order order = orderRepository.findById(orderId).orElseThrow(
                 () -> new OrderNotFoundException("존재하지 않는 주문입니다.")
         );
-        order.updateOrderStatus(request.getOrderStatus());
-        if (order.getOrderStatus() == OrderStatus.CANCEL) {
-            order.getCustomer().cancelOrder(order.getAmount());
+        switch (order.getOrderStatus()) {
+            case CANCEL -> throw new IllegalStateException("취소된 상품은 상태를 변경할 수 없습니다.");
+            case PREPARE -> order.updateOrderStatus(OrderStatus.IN_DELIVERY);
+            case IN_DELIVERY -> order.updateOrderStatus(OrderStatus.COMPLETE);
+            case COMPLETE -> throw new IllegalStateException("배송 완료된 상품은 상태를 변경할 수 없습니다.");
         }
-        return new UpdateOrderStatusResponse(order.getOrderNumber(), order.getOrderStatus());
+    }
+
+    // 주문 취소
+    @Transactional
+    public void delete(Long orderId, DeleteOrderRequest request) {
+        Order order = orderRepository.findById(orderId).orElseThrow(
+                () -> new OrderNotFoundException("존재하지 않는 주문입니다.")
+        );
+        if (order.getOrderStatus() == OrderStatus.CANCEL) {
+            throw new IllegalStateException("이미 취소된 상품입니다.");
+        } else if (order.getOrderStatus() != OrderStatus.PREPARE) {
+            throw new IllegalStateException("주문 취소는 준비 상태에만 가능합니다.");
+        }
+        order.canceledOrder(request.canceledReason);
+        order.updateOrderStatus(OrderStatus.CANCEL);
+        order.getCustomer().cancelOrder(order.getAmount());
+        order.getProduct().updateStock(order.getProduct().getStock() + order.getQuantity());
+        // 주문 수량은 1 이상 -> 단종, 판매중은 유지, 품절은 상태 변경
+        if (order.getProduct().getStatus() == ProductStatus.SOLD_OUT) {
+            order.getProduct().changeStatus(ProductStatus.ON_SALE);
+        }
+        // 주문은 삭제되도 데이터 조회 가능
+        orderRepository.deleteById(orderId);
     }
 }

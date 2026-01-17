@@ -19,7 +19,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "orders")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLRestriction("deleted_at is NULL")
 @SQLDelete(sql = "UPDATE orders SET deleted_at = NOW() WHERE id = ?")
 public class Order extends BaseEntity {
     @Id
@@ -36,10 +35,11 @@ public class Order extends BaseEntity {
     private Product product;
     private int quantity;
     private int amount;
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "admin_id", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "admin_id")
     private Admin admin;
     private OrderStatus orderStatus;
+    private String canceledReason;
 
     private LocalDateTime deletedAt;
 
@@ -55,5 +55,9 @@ public class Order extends BaseEntity {
 
     public void updateOrderStatus(OrderStatus orderStatus) {
         this.orderStatus = orderStatus;
+    }
+
+    public void canceledOrder(String canceledReason) {
+        this.canceledReason = canceledReason;
     }
 }

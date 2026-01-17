@@ -8,6 +8,7 @@ import com.commerceteamproject.common.exception.LoginRequiredException;
 import com.commerceteamproject.order.dto.*;
 import com.commerceteamproject.order.entity.OrderStatus;
 import com.commerceteamproject.order.service.OrderService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -25,7 +26,7 @@ public class OrderController {
     @PostMapping("/orders")
     public ResponseEntity<CreateOrderResponse> createOrder(
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin,
-            @RequestBody CreateOrderRequest request) {
+            @Valid @RequestBody CreateOrderRequest request) {
         if (sessionAdmin == null) {
             throw new LoginRequiredException("로그인이 필요합니다.");
         }
@@ -61,13 +62,26 @@ public class OrderController {
 
     // 주문 상태 변경
     @PutMapping("/orders/{orderId}")
-    public ResponseEntity<UpdateOrderStatusResponse> updateOrderStatus(
+    public ResponseEntity<Void> updateOrderStatus(
             @PathVariable Long orderId,
-            @RequestBody UpdateOrderStatusRequest request,
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin) {
         if (sessionAdmin == null) {
             throw new LoginRequiredException("로그인이 필요합니다.");
         }
-        return ResponseEntity.status(HttpStatus.OK).body(orderService.updateStatus(orderId, request));
+        orderService.updateStatus(orderId);
+        return ResponseEntity.status(HttpStatus.OK).build();
+    }
+
+    // 주문 취소
+    @DeleteMapping("/orders/{orderId}")
+    public ResponseEntity<Void> deleteOrder(
+            @PathVariable Long orderId,
+            @Valid @RequestBody DeleteOrderRequest request,
+            @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin) {
+        if (sessionAdmin == null) {
+            throw new LoginRequiredException("로그인이 필요합니다.");
+        }
+        orderService.delete(orderId, request);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }
