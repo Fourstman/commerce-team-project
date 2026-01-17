@@ -43,7 +43,7 @@ public class CustomerService {
                 customer.getName(),
                 customer.getEmail(),
                 customer.getPhone(),
-                customer.getStatus().getDescription(),
+                customer.getStatus(),
                 customer.getTotalOrderCount(),
                 customer.getTotalOrderAmount(),
                 customer.getCreatedAt()
@@ -61,7 +61,7 @@ public class CustomerService {
                 customer.getName(),
                 customer.getEmail(),
                 customer.getPhone(),
-                customer.getStatus().getDescription(),
+                customer.getStatus(),
                 customer.getTotalOrderCount(),
                 customer.getTotalOrderAmount(),
                 customer.getCreatedAt()
@@ -91,7 +91,7 @@ public class CustomerService {
         customer.updateStatus(request);
         return new UpdateCustomerStatusResponse(
                 customer.getName(),
-                customer.getStatus().getDescription()
+                customer.getStatus()
         );
     }
 
