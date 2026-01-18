@@ -2,6 +2,7 @@ package com.commerceteamproject.customer.controller;
 
 import com.commerceteamproject.admin.dto.SessionAdmin;
 import com.commerceteamproject.admin.entity.AdminRole;
+import com.commerceteamproject.common.dto.ApiResponse;
 import com.commerceteamproject.common.dto.PageResponse;
 import com.commerceteamproject.customer.dto.*;
 import com.commerceteamproject.customer.entity.CustomerStatus;
@@ -26,7 +27,7 @@ public class CustomerController {
 
     // 고객 리스트 조회
     @GetMapping
-    public ResponseEntity<PageResponse<GetCustomerListResponse>> findAll(
+    public ResponseEntity<ApiResponse<PageResponse<GetCustomerListResponse>>> findAll(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) CustomerStatus status,
             @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
@@ -36,14 +37,14 @@ public class CustomerController {
             throw new LoginRequiredException("로그인이 필요합니다.");
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(customerService.findAll(
-                keyword, status, pageable
-        ));
+        PageResponse<GetCustomerListResponse> result = customerService.findAll(keyword, status, pageable);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(HttpStatus.OK, "고객 리스트 조회에 성공했습니다.", result));
     }
 
     // 고객 상세 조회
     @GetMapping("/{customerId}")
-    public ResponseEntity<GetCustomerResponse> findOne(
+    public ResponseEntity<ApiResponse<GetCustomerResponse>> findOne(
             @PathVariable Long customerId,
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin
     ) {
@@ -51,12 +52,14 @@ public class CustomerController {
             throw new LoginRequiredException("로그인이 필요합니다.");
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(customerService.findOne(customerId));
+        GetCustomerResponse result = customerService.findOne(customerId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(HttpStatus.OK, "고객 상세 조회에 성공했습니다.", result));
     }
 
     // 고객 정보 수정
     @PatchMapping("/{customerId}/info")
-    public ResponseEntity<UpdateCustomerInformationResponse> updateInformation(
+    public ResponseEntity<ApiResponse<UpdateCustomerInformationResponse>> updateInformation(
             @PathVariable Long customerId,
             @Valid @RequestBody UpdateCustomerInformationRequest request,
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin
@@ -69,12 +72,14 @@ public class CustomerController {
             throw new AccessDeniedException("권한이 없습니다.");
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(customerService.updateInformation(customerId, request));
+        UpdateCustomerInformationResponse result = customerService.updateInformation(customerId, request);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(HttpStatus.OK, "고객의 정보를 수정했습니다.", result));
     }
 
     // 고객 상태 변경
     @PatchMapping("/{customerId}/status")
-    public ResponseEntity<UpdateCustomerStatusResponse> updateStatus(
+    public ResponseEntity<ApiResponse<UpdateCustomerStatusResponse>> updateStatus(
             @PathVariable Long customerId,
             @Valid @RequestBody UpdateCustomerStatusRequest request,
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin
@@ -87,12 +92,14 @@ public class CustomerController {
             throw new AccessDeniedException("권한이 없습니다.");
         }
 
-        return ResponseEntity.status(HttpStatus.OK).body(customerService.updateStatus(customerId, request));
+        UpdateCustomerStatusResponse result = customerService.updateStatus(customerId, request);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(HttpStatus.OK, "고객의 상태를 변경했습니다.", result));
     }
     
     // 고객 삭제
     @DeleteMapping("/{customerId}")
-    public ResponseEntity<Void> delete(
+    public ResponseEntity<ApiResponse<Void>> delete(
             @PathVariable Long customerId,
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin
     ) {
@@ -105,6 +112,7 @@ public class CustomerController {
         }
 
         customerService.delete(customerId);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(HttpStatus.OK, "고객을 삭제했습니다.", null));
     }
 }
