@@ -2,6 +2,7 @@ package com.commerceteamproject.order.controller;
 
 import com.commerceteamproject.admin.dto.SessionAdmin;
 import com.commerceteamproject.admin.entity.AdminRole;
+import com.commerceteamproject.common.dto.ApiResponse;
 import com.commerceteamproject.common.dto.PageResponse;
 import com.commerceteamproject.common.exception.AccessDeniedException;
 import com.commerceteamproject.common.exception.LoginRequiredException;
@@ -24,7 +25,7 @@ public class OrderController {
 
     // CS 주문 생성
     @PostMapping("/orders")
-    public ResponseEntity<CreateOrderResponse> createOrder(
+    public ResponseEntity<ApiResponse<CreateOrderResponse>> createOrder(
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin,
             @Valid @RequestBody CreateOrderRequest request) {
         if (sessionAdmin == null) {
@@ -33,12 +34,14 @@ public class OrderController {
         if (sessionAdmin.getAdminRole() == AdminRole.RUN) {
             throw new AccessDeniedException("권한이 없습니다.");
         }
-        return ResponseEntity.status(HttpStatus.CREATED).body(orderService.save(sessionAdmin, request));
+        CreateOrderResponse result = orderService.save(sessionAdmin, request);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success(HttpStatus.CREATED, "CS 주문이 생성되었습니다.", result));
     }
 
     // 주문 리스트 조회
     @GetMapping("/orders")
-    public ResponseEntity<PageResponse<GetOrderListResponse>> findOrders(
+    public ResponseEntity<ApiResponse<PageResponse<GetOrderListResponse>>> findOrders(
             @RequestParam(required = false)String keyword,
             @RequestParam(required = false)OrderStatus status,
             @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
@@ -46,35 +49,40 @@ public class OrderController {
         if (sessionAdmin == null) {
             throw new LoginRequiredException("로그인이 필요합니다.");
         }
-        return ResponseEntity.status(HttpStatus.OK).body(orderService.findOrders(keyword, status, pageable));
+        PageResponse<GetOrderListResponse> result = orderService.findOrders(keyword, status, pageable);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(HttpStatus.OK, "주문 리스트 조회에 성공했습니다.", result));
     }
 
     // 주문 상세 조회
     @GetMapping("/orders/{orderId}")
-    public ResponseEntity<GetOneOrderResponse> findOneOrder(
+    public ResponseEntity<ApiResponse<GetOneOrderResponse>> findOneOrder(
             @PathVariable Long orderId,
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin) {
         if (sessionAdmin == null) {
             throw new LoginRequiredException("로그인이 필요합니다.");
         }
-        return ResponseEntity.status(HttpStatus.OK).body(orderService.findOne(orderId));
+        GetOneOrderResponse result = orderService.findOne(orderId);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(HttpStatus.OK, "주문 상세 조회에 성공했습니다.", result));
     }
 
     // 주문 상태 변경
     @PutMapping("/orders/{orderId}")
-    public ResponseEntity<Void> updateOrderStatus(
+    public ResponseEntity<ApiResponse<Void>> updateOrderStatus(
             @PathVariable Long orderId,
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin) {
         if (sessionAdmin == null) {
             throw new LoginRequiredException("로그인이 필요합니다.");
         }
         orderService.updateStatus(orderId);
-        return ResponseEntity.status(HttpStatus.OK).build();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(HttpStatus.OK, "주문의 상태를 변경했습니다.", null));
     }
 
     // 주문 취소
     @DeleteMapping("/orders/{orderId}")
-    public ResponseEntity<Void> deleteOrder(
+    public ResponseEntity<ApiResponse<Void>> deleteOrder(
             @PathVariable Long orderId,
             @Valid @RequestBody DeleteOrderRequest request,
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin) {
@@ -82,6 +90,7 @@ public class OrderController {
             throw new LoginRequiredException("로그인이 필요합니다.");
         }
         orderService.delete(orderId, request);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success(HttpStatus.OK, "주문을 취소했습니다.", null));
     }
 }
