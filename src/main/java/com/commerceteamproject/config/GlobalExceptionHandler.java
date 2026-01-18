@@ -20,7 +20,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
+    public ResponseEntity<String> handleIllegalArgumentException() {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body("잘못된 요청 파라미터입니다");
@@ -30,6 +30,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<Void>> handleServiceException(ServiceException e) {
         return ResponseEntity
                 .status(e.getStatus())
-                .body(ApiResponse.error(e.getStatus()));
+                .body(ApiResponse.error(e.getStatus(), e.getMessage()));
     }
 }
