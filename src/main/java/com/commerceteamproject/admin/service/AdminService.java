@@ -6,6 +6,7 @@ import com.commerceteamproject.admin.entity.AdminRole;
 import com.commerceteamproject.admin.exception.*;
 import com.commerceteamproject.admin.repository.AdminRepository;
 import com.commerceteamproject.common.dto.PageResponse;
+import com.commerceteamproject.common.exception.LoginRequiredException;
 import com.commerceteamproject.config.PasswordEncoder;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -82,7 +83,7 @@ public class AdminService {
             AdminListRequest request
     ) {
         if (loginAdmin == null) {
-            throw new UnauthorizedException("로그인이 필요합니다.");
+            throw new LoginRequiredException("로그인이 필요합니다.");
         }
 
         Admin admin = adminRepository.findById(loginAdmin.getId())
@@ -122,7 +123,7 @@ public class AdminService {
     @Transactional(readOnly = true)
     public AdminGetResponse findOne(Long userId) {
         Admin admin = adminRepository.findById(userId).orElseThrow(
-                () -> new IllegalStateException("해당하는 관리자의 ID가 없음")
+                () -> new AdminNotFoundException("해당하는 관리자의 ID가 없음")
         );
         return new AdminGetResponse(
                 admin.getId(),
@@ -140,7 +141,7 @@ public class AdminService {
     @Transactional
     public AdminUpdateResponse update(Long adminId, AdminUpdateRequest request) {
         Admin admin = adminRepository.findById(adminId).orElseThrow(
-                () -> new IllegalStateException("수정할 관리자가 없음")
+                () -> new AdminNotFoundException("수정할 관리자가 없음")
         );
         admin.update(request.getName(), request.getEmail(), request.getPhoneNumber());
         return new AdminUpdateResponse(
@@ -155,7 +156,7 @@ public class AdminService {
     @Transactional
     public AdminRoleUpdateResponse changeRole(Long adminId, AdminRoleUpdateRequest request) {
         Admin admin = adminRepository.findById(adminId).orElseThrow(
-                () -> new IllegalStateException("역할을 변경할 관리자가 없습니다.")
+                () -> new AdminNotFoundException("역할을 변경할 관리자가 없습니다.")
         );
         admin.changeRole(request.getAdminRole());
         return new AdminRoleUpdateResponse(
@@ -168,7 +169,7 @@ public class AdminService {
     @Transactional
     public AdminStatusUpdateResponse changeStatus(Long adminId, AdminStatusUpdateRequest request) {
         Admin admin = adminRepository.findById(adminId).orElseThrow(
-                () -> new IllegalStateException("상태를 변경할 관리자가 없습니다.")
+                () -> new AdminNotFoundException("상태를 변경할 관리자가 없습니다.")
         );
         admin.changeStatus(request.getAdminStatus());
         return new AdminStatusUpdateResponse(
@@ -181,7 +182,7 @@ public class AdminService {
     @Transactional
     public AdminApproveResponse approve(Long adminId) {
         Admin admin = adminRepository.findById(adminId)
-                .orElseThrow(() -> new IllegalStateException("승인할 관리자가 없습니다."));
+                .orElseThrow(() -> new AdminNotFoundException("승인할 관리자가 없습니다."));
 
         admin.approve();    // 얘가 문제야...
 
@@ -197,7 +198,7 @@ public class AdminService {
     @Transactional
     public AdminRejectResponse reject(Long adminId, AdminRejectRequest request) {
         Admin admin = adminRepository.findById(adminId)
-                .orElseThrow(() -> new IllegalStateException("거부할 관리자가 없습니다."));
+                .orElseThrow(() -> new AdminNotFoundException("거부할 관리자가 없습니다."));
 
         admin.reject(request.getReason());
 
@@ -213,11 +214,11 @@ public class AdminService {
     @Transactional
     public void delete(Long adminId, AdminDeleteRequest request) {
         Admin admin = adminRepository.findById(adminId).orElseThrow(
-                () -> new IllegalStateException("해당 관리자 ID가 없음")
+                () -> new AdminNotFoundException("해당 관리자 ID가 없음")
         );
         // 비밀번호 검증
         if (!passwordEncoder.matches(request.getPassword(), admin.getPassword())) {
-            throw new IllegalStateException("비밀번호 불일치");
+            throw new PasswordNotMatchException("비밀번호 불일치");
         }
         adminRepository.deleteById(adminId);
     }
@@ -226,10 +227,10 @@ public class AdminService {
     @Transactional
     public AdminPasswordUpdateResponse pwUpdate(Long adminId, AdminPasswordUpdateRequest request) {
         Admin admin = adminRepository.findById(adminId)
-                .orElseThrow(() -> new IllegalStateException("비밀번호 수정할 관리자가 없음"));
+                .orElseThrow(() -> new AdminNotFoundException("비밀번호 수정할 관리자가 없음"));
 
         if (request.getPassword() == null || request.getPassword().isBlank()) {
-            throw new IllegalArgumentException("비밀번호는 필수입니다.");
+            throw new  RequiredFieldMissingException("비밀번호는 필수입니다.");
         }
         String encodedPassword = passwordEncoder.encode(request.getPassword());
         admin.pwUpdate(encodedPassword);
@@ -240,7 +241,7 @@ public class AdminService {
     @Transactional
     public FindOwnAdminResponse findOwn(SessionAdmin sessionAdmin) {
         Admin admin = adminRepository.findById(sessionAdmin.getId()).orElseThrow(
-                () -> new IllegalStateException("존재하지 않는 유저입니다.")
+                () -> new AdminNotFoundException("존재하지 않는 유저입니다.")
         );
         return new FindOwnAdminResponse(
                 admin.getName(),
@@ -252,7 +253,7 @@ public class AdminService {
     @Transactional
     public UpdateOwnAdminResponse updateOwn(SessionAdmin sessionAdmin, UpdateOwnAdminRequest request) {
         Admin admin = adminRepository.findById(sessionAdmin.getId()).orElseThrow(
-                () -> new IllegalStateException("존재하지 않는 유저입니다.")
+                () -> new AdminNotFoundException("존재하지 않는 유저입니다.")
         );
         admin.updateOwn(
                 request.getName(),
