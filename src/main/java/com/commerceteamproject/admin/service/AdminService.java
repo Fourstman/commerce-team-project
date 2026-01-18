@@ -229,9 +229,6 @@ public class AdminService {
         Admin admin = adminRepository.findById(adminId)
                 .orElseThrow(() -> new AdminNotFoundException("비밀번호 수정할 관리자가 없음"));
 
-        if (request.getPassword() == null || request.getPassword().isBlank()) {
-            throw new  RequiredFieldMissingException("비밀번호는 필수입니다.");
-        }
         String encodedPassword = passwordEncoder.encode(request.getPassword());
         admin.pwUpdate(encodedPassword);
         return new AdminPasswordUpdateResponse(admin.getPassword());
