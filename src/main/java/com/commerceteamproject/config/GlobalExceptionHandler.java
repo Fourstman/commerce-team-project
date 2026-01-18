@@ -1,5 +1,6 @@
 package com.commerceteamproject.config;
 
+import com.commerceteamproject.common.dto.ApiResponse;
 import com.commerceteamproject.common.exception.ServiceException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -30,5 +31,14 @@ public class    GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body("잘못된 요청 파라미터입니다");
+    }
+
+    @ExceptionHandler(ServiceException.class)
+    public ResponseEntity<ApiResponse<Void>> handleApiException(
+            ServiceException e
+    ) {
+        return ResponseEntity
+                .status(e.getStatus())
+                .body(ApiResponse.error(e.getCode()));
     }
 }
