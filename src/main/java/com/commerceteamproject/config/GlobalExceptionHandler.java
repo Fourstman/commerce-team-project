@@ -11,19 +11,12 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.List;
 
 @RestControllerAdvice
-public class    GlobalExceptionHandler {
+public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<List<String>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         List<String> errorMessage = ex.getBindingResult().getFieldErrors().stream()
                 .map(fieldError -> fieldError.getDefaultMessage()).toList();
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
-    }
-
-    @ExceptionHandler(ServiceException.class)
-    public ResponseEntity<String> handleServiceException(ServiceException ex) {
-        return ResponseEntity
-                .status(ex.getStatus())
-                .body(ex.getMessage());
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
@@ -34,9 +27,7 @@ public class    GlobalExceptionHandler {
     }
 
     @ExceptionHandler(ServiceException.class)
-    public ResponseEntity<ApiResponse<Void>> handleApiException(
-            ServiceException e
-    ) {
+    public ResponseEntity<ApiResponse<Void>> handleServiceException(ServiceException e) {
         return ResponseEntity
                 .status(e.getStatus())
                 .body(ApiResponse.error(e.getStatus()));
