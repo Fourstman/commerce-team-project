@@ -33,12 +33,12 @@ public class    GlobalExceptionHandler {
                 .body("잘못된 요청 파라미터입니다");
     }
 
-    @ExceptionHandler(ServiceException.class)
-    public ResponseEntity<ApiResponse<Void>> handleApiException(
-            ServiceException e
-    ) {
-        return ResponseEntity
-                .status(e.getStatus())
-                .body(ApiResponse.error(e.getCode()));
-    }
+//    @ExceptionHandler(ServiceException.class)
+//    public ResponseEntity<ApiResponse<Void>> handleApiException(
+//            ServiceException e
+//    ) {
+//        return ResponseEntity
+//                .status(e.getStatus())
+//                .body(ApiResponse.error(e.getCode()));
+//    }
 }
