@@ -8,7 +8,7 @@ public class ServiceException extends RuntimeException {
 
     private final HttpStatus status;
 
-    public ServiceException(HttpStatus status, String message) {
+    public ServiceException(String message, HttpStatus status) {
         super(message);
         this.status = status;
     }

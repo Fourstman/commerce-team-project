@@ -44,7 +44,8 @@ public class ProductController {
     ) {
         validateAdmin(sessionAdmin);
         ProductCreateResponse product = productService.save(sessionAdmin, request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.success("상품이 생성되었습니다.",product));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.success(HttpStatus.CREATED, "상품이 생성되었습니다.", product));
     }
 
     @GetMapping
@@ -59,7 +60,7 @@ public class ProductController {
             throw new LoginRequiredException("로그인이 필요합니다.");
         }
         PageResponse<ProductListItemResponse> result = productService.getProducts(keyword, productCategory, productStatus, pageable);
-        return ResponseEntity.ok(ApiResponse.success("상품 목록 조회에 성공했습니다.", result));
+        return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, "상품 목록 조회에 성공했습니다.", result));
     }
 
     @GetMapping("/{productId}") // 상품 단건 조회
@@ -71,7 +72,7 @@ public class ProductController {
             throw new LoginRequiredException("로그인이 필요합니다.");
         }
         ProductGetResponse result = productService.getById(productId);
-        return ResponseEntity.ok(ApiResponse.success("상품 조회에 성공했습니다.", result));
+        return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, "상품 조회에 성공했습니다.", result));
     }
 
 
@@ -83,7 +84,7 @@ public class ProductController {
     ) {
         validateAdmin(sessionAdmin);
         ProductUpdateResponse result = productService.updateProductInfo(productId, request);
-        return ResponseEntity.ok(ApiResponse.success("상품 정보가 수정되었습니다.", result));
+        return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, "상품 정보가 수정되었습니다.", result));
     }
 
     @PatchMapping("/{productId}/stock")
@@ -94,7 +95,7 @@ public class ProductController {
     ) {
         validateAdmin(sessionAdmin);
         ProductStockUpdateResponse result = productService.updateStock(productId, request);
-        return ResponseEntity.ok(ApiResponse.success("상품 재고가 수정되었습니다.", result));
+        return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, "상품 재고가 수정되었습니다.", result));
     }
 
     @DeleteMapping("/{productId}") // 상품 삭제
@@ -105,7 +106,7 @@ public class ProductController {
         validateAdmin(sessionAdmin);
         productService.delete(productId);
 
-        return ResponseEntity.ok(ApiResponse.success("상품이 삭제 되었습니다", null));
+        return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, "상품이 삭제 되었습니다", null));
     }
 
 }
