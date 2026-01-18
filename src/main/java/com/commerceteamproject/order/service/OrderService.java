@@ -11,7 +11,10 @@ import com.commerceteamproject.customer.repository.CustomerRepository;
 import com.commerceteamproject.order.dto.*;
 import com.commerceteamproject.order.entity.Order;
 import com.commerceteamproject.order.entity.OrderStatus;
+import com.commerceteamproject.order.exception.AdminNotFoundException;
+import com.commerceteamproject.order.exception.InsufficientStockException;
 import com.commerceteamproject.order.exception.OrderNotFoundException;
+import com.commerceteamproject.order.exception.OrderStatusNotAllowedException;
 import com.commerceteamproject.order.repository.OrderRepository;
 import com.commerceteamproject.product.entity.Product;
 import com.commerceteamproject.product.entity.ProductStatus;
@@ -43,14 +46,14 @@ public class OrderService {
                 () -> new ProductNotFoundException("존재하지 않는 상품입니다.")
         );
         Admin admin = adminRepository.findById(sessionAdmin.getId()).orElseThrow(
-                () -> new IllegalStateException("존재하지 않는 관리자입니다.")
+                () -> new AdminNotFoundException("존재하지 않는 관리자입니다.")
         );
         if (product.getStatus().equals(ProductStatus.SOLD_OUT)) {
-            throw new IllegalStateException("해당 상품은 품절되었습니다.");
+            throw new OrderStatusNotAllowedException("해당 상품은 품절되었습니다.");
         } else if (product.getStatus().equals(ProductStatus.DISCONTINUED)) {
-            throw new IllegalStateException("해당 상품은 단종되었습니다.");
+            throw new OrderStatusNotAllowedException("해당 상품은 단종되었습니다.");
         } else if (product.getStock() < request.getQuantity()) {
-            throw new IllegalStateException("남은 재고보다 주문 수량이 많습니다.");
+            throw new InsufficientStockException("남은 재고보다 주문 수량이 많습니다.");
         }
         product.updateStock(product.getStock() - request.getQuantity());
         if (product.getStock() == 0) {
@@ -134,10 +137,10 @@ public class OrderService {
                 () -> new OrderNotFoundException("존재하지 않는 주문입니다.")
         );
         switch (order.getOrderStatus()) {
-            case CANCEL -> throw new IllegalStateException("취소된 상품은 상태를 변경할 수 없습니다.");
+            case CANCEL -> throw new OrderStatusNotAllowedException("취소된 상품은 상태를 변경할 수 없습니다.");
             case PREPARE -> order.updateOrderStatus(OrderStatus.IN_DELIVERY);
             case IN_DELIVERY -> order.updateOrderStatus(OrderStatus.COMPLETE);
-            case COMPLETE -> throw new IllegalStateException("배송 완료된 상품은 상태를 변경할 수 없습니다.");
+            case COMPLETE -> throw new OrderStatusNotAllowedException("배송 완료된 상품은 상태를 변경할 수 없습니다.");
         }
     }
 
@@ -148,9 +151,9 @@ public class OrderService {
                 () -> new OrderNotFoundException("존재하지 않는 주문입니다.")
         );
         if (order.getOrderStatus() == OrderStatus.CANCEL) {
-            throw new IllegalStateException("이미 취소된 상품입니다.");
+            throw new OrderStatusNotAllowedException("이미 취소된 상품입니다.");
         } else if (order.getOrderStatus() != OrderStatus.PREPARE) {
-            throw new IllegalStateException("주문 취소는 준비 상태에만 가능합니다.");
+            throw new OrderStatusNotAllowedException("주문 취소는 준비 상태에만 가능합니다.");
         }
         order.canceledOrder(request.canceledReason);
         order.updateOrderStatus(OrderStatus.CANCEL);
