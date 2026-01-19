@@ -10,13 +10,11 @@ import org.springframework.data.repository.query.Param;
 
 public interface ReviewRepository extends JpaRepository<Review, Long> {
     @Query("""
-        SELECT r FROM Review r
-        WHERE (:keyword 
-                IS NULL OR 
-                r.order.customer.name 
-                        LIKE %:keyword% 
-                OR r.order.product.name 
-                        LIKE %:keyword%)
+        SELECT r 
+        FROM Review r
+        WHERE (:keyword IS NULL 
+                OR r.order.customer.name LIKE %:keyword% 
+                OR r.order.product.name LIKE %:keyword%)
           AND (:rating IS NULL OR r.rating = :rating)
         """)
     Page<Review> findByKeywordAndRating(

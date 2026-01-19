@@ -3,11 +3,15 @@ package com.commerceteamproject.admin.service;
 import com.commerceteamproject.admin.dto.*;
 import com.commerceteamproject.admin.entity.Admin;
 import com.commerceteamproject.admin.entity.AdminRole;
+import com.commerceteamproject.admin.entity.AdminStatus;
 import com.commerceteamproject.admin.exception.*;
 import com.commerceteamproject.admin.repository.AdminRepository;
 import com.commerceteamproject.common.dto.PageResponse;
+import com.commerceteamproject.admin.exception.AdminStatusNotAllowedException;
 import com.commerceteamproject.common.exception.LoginRequiredException;
 import com.commerceteamproject.config.PasswordEncoder;
+import com.commerceteamproject.review.dto.ReviewGetResponse;
+import com.commerceteamproject.review.entity.Review;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -64,10 +68,10 @@ public class AdminService {
             throw new PasswordNotMatchException("비밀번호가 일치하지 않습니다.");
         }
         switch (admin.getAdminStatus()) {
-            case INACTIVATION -> throw new AdminStatusNotActivateException("비활성화된 계정입니다.");
-            case SUSPENSION -> throw new AdminStatusNotActivateException("정지된 계정입니다.");
-            case PENDING -> throw new AdminStatusNotActivateException("승인대기 상태입니다. 슈퍼관리자의 승인이 필요합니다.");
-            case REJECTION -> throw new AdminStatusNotActivateException("승인거부된 계정입니다.");
+            case INACTIVATION -> throw new AdminStatusNotAllowedException("비활성화된 계정입니다.");
+            case SUSPENSION -> throw new AdminStatusNotAllowedException("정지된 계정입니다.");
+            case PENDING -> throw new AdminStatusNotAllowedException("승인대기 상태입니다. 슈퍼관리자의 승인이 필요합니다.");
+            case REJECTION -> throw new AdminStatusNotAllowedException("승인거부된 계정입니다.");
         }
         return new SessionAdmin(
                 admin.getId(),
@@ -79,43 +83,24 @@ public class AdminService {
     // 관리자 리스트 조회(쿼리 파라미터 사용)
     @Transactional(readOnly = true)
     public PageResponse<AdminListItemResponse> findAdmins(
-            SessionAdmin loginAdmin,
-            AdminListRequest request
+            String keyword,
+            AdminRole adminRole,
+            AdminStatus adminStatus,
+            int page,
+            int size,
+            String sortBy,
+            String direction
     ) {
-        if (loginAdmin == null) {
-            throw new LoginRequiredException("로그인이 필요합니다.");
-        }
-
-        Admin admin = adminRepository.findById(loginAdmin.getId())
-                .orElseThrow(() -> new UnauthorizedException("유효하지 않은 세션입니다."));
-
-        if (admin.getAdminRole() != AdminRole.SUPER) {
-            throw new ForbiddenException("슈퍼 관리자만 조회 가능합니다.");
-        }
-
-
-        Sort sort = request.getDirection().equalsIgnoreCase("asc")
-                ? Sort.by(request.getSortBy()).ascending()
-                : Sort.by(request.getSortBy()).descending();
-
         Pageable pageable = PageRequest.of(
-                request.getPage() - 1,
-                request.getSize(),
-                sort
+                page - 1,  // 1-based -> 0-based
+                size,
+                Sort.by(Sort.Direction.fromString(direction), sortBy)
         );
 
-        Page<Admin> page = adminRepository.findAdminList(
-                request.getKeyword(),
-                request.getAdminRole(),
-                request.getAdminStatus(),
-                pageable
-        );
+        Page<Admin> reviews = adminRepository.findAdminList(keyword, adminRole, adminStatus, pageable);
+        Page<AdminListItemResponse> dtoPage = reviews.map(AdminListItemResponse::new);
 
-        List<AdminListItemResponse> admins = page.getContent().stream()
-                .map(AdminListItemResponse::new)
-                .toList();
-
-        return PageResponse.of(page, admins);
+        return new PageResponse<>(dtoPage);
     }
 
     // 관리자 상세 조회
@@ -184,7 +169,7 @@ public class AdminService {
         Admin admin = adminRepository.findById(adminId)
                 .orElseThrow(() -> new AdminNotFoundException("승인할 관리자가 없습니다."));
 
-        admin.approve();    // 얘가 문제야...
+        admin.approve();
 
         return new AdminApproveResponse(
                 admin.getId(),
@@ -212,26 +197,21 @@ public class AdminService {
 
     // 관리자 삭제 : 특정 관리자를 탈퇴(삭제)시킵니다.
     @Transactional
-    public void delete(Long adminId, AdminDeleteRequest request) {
+    public void delete(Long adminId) {
         Admin admin = adminRepository.findById(adminId).orElseThrow(
                 () -> new AdminNotFoundException("해당 관리자 ID가 없음")
         );
-        // 비밀번호 검증
-        if (!passwordEncoder.matches(request.getPassword(), admin.getPassword())) {
-            throw new PasswordNotMatchException("비밀번호 불일치");
-        }
         adminRepository.deleteById(adminId);
     }
 
     // 관리자 비밀번호 수정(이름, 이메일, 비밀번호)
     @Transactional
-    public AdminPasswordUpdateResponse pwUpdate(Long adminId, AdminPasswordUpdateRequest request) {
-        Admin admin = adminRepository.findById(adminId)
-                .orElseThrow(() -> new AdminNotFoundException("비밀번호 수정할 관리자가 없음"));
+    public void pwUpdate(SessionAdmin sessionAdmin, AdminPasswordUpdateRequest request) {
+        Admin admin = adminRepository.findById(sessionAdmin.getId())
+                .orElseThrow(() -> new AdminNotFoundException("존재하지 않는 유저입니다."));
 
         String encodedPassword = passwordEncoder.encode(request.getPassword());
         admin.pwUpdate(encodedPassword);
-        return new AdminPasswordUpdateResponse(admin.getPassword());
     }
 
 

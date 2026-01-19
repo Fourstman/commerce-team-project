@@ -1,6 +1,6 @@
 package com.commerceteamproject.admin.entity;
 
-import com.commerceteamproject.common.exception.AdminStatusNotAllowedException;
+import com.commerceteamproject.admin.exception.AdminStatusNotAllowedException;
 import com.commerceteamproject.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
