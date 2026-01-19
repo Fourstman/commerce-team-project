@@ -10,16 +10,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.NaturalId;
-import org.hibernate.annotations.SQLDelete;
-import org.hibernate.annotations.SQLRestriction;
-
-import java.time.LocalDateTime;
 
 @Getter
 @Entity
 @Table(name = "orders")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@SQLDelete(sql = "UPDATE orders SET deleted_at = NOW() WHERE id = ?")
 public class Order extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,8 +35,6 @@ public class Order extends BaseEntity {
     private Admin admin;
     private OrderStatus orderStatus;
     private String canceledReason;
-
-    private LocalDateTime deletedAt;
 
     public Order(Customer customer, Product product, int quantity, int amount, Admin admin) {
         this.orderNumber = TsidCreator.getTsid().toString();
