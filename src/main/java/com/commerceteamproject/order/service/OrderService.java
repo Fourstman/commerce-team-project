@@ -22,6 +22,7 @@ import com.commerceteamproject.product.exception.ProductNotFoundException;
 import com.commerceteamproject.product.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -94,7 +95,9 @@ public class OrderService {
                 throw new InvalidParameterException("잘못된 정렬 기준입니다.");
             }
         });
-        Page<Order> orders = orderRepository.findByKeywordAndStatus(keyword, status, pageable);
+        Pageable basePageable = PageRequest.of(
+                pageable.getPageNumber() - 1, pageable.getPageSize(), pageable.getSort());
+        Page<Order> orders = orderRepository.findByKeywordAndStatus(keyword, status, basePageable);
         Page<GetOrderListResponse> page = orders.map(o -> new GetOrderListResponse(
                 o.getId(),
                 o.getOrderNumber(),
