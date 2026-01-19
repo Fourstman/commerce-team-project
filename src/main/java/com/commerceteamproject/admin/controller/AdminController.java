@@ -136,17 +136,9 @@ public class AdminController {
             @PathVariable Long adminId,
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin loginAdmin
     ) {
-        // 로그인 안 함
-        if (loginAdmin == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
-        }
-    
-        // 일반관리자(RUN, CS)는 권한 없음
-        if (loginAdmin.getAdminRole() != AdminRole.SUPER) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN)
-                    .body(null); // "접근 권한이 없습니다"
-        }
 
+        // 일반 관리자(RUN, CS)는 거부 권한 없음
+        SUPERvalidateAdmin(loginAdmin);
         AdminApproveResponse result = adminService.approve(adminId);
         return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, "관리자를 승인했습니다", result));
     }
@@ -160,9 +152,7 @@ public class AdminController {
     ) {
 
         // 일반 관리자(RUN, CS)는 거부 권한 없음
-        if (loginAdmin.getAdminRole() != AdminRole.SUPER) {
-            return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
-        }
+        SUPERvalidateAdmin(loginAdmin);
 
         AdminRejectResponse result = adminService.reject(adminId, request);
         return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, "관리자를 거부했습니다", result));
