@@ -52,4 +52,12 @@ public class Customer extends BaseEntity {
         this.totalOrderAmount -= amount;
         this.totalOrderCount--;
     }
+
+    // 가상 테스트용 생성
+    public Customer(String name, String email, String phone, CustomerStatus status) {
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.status = status;
+    }
 }
