@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.List;
 
 @RestControllerAdvice
-public class    GlobalExceptionHandler {
+public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<List<String>> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
         List<String> errorMessage = ex.getBindingResult().getFieldErrors().stream()
@@ -19,26 +19,17 @@ public class    GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errorMessage);
     }
 
-    @ExceptionHandler(ServiceException.class)
-    public ResponseEntity<String> handleServiceException(ServiceException ex) {
-        return ResponseEntity
-                .status(ex.getStatus())
-                .body(ex.getMessage());
-    }
-
     @ExceptionHandler(IllegalArgumentException.class)
-    public ResponseEntity<String> handleIllegalArgumentException(IllegalArgumentException ex) {
+    public ResponseEntity<String> handleIllegalArgumentException() {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body("잘못된 요청 파라미터입니다");
     }
 
-//    @ExceptionHandler(ServiceException.class)
-//    public ResponseEntity<ApiResponse<Void>> handleApiException(
-//            ServiceException e
-//    ) {
-//        return ResponseEntity
-//                .status(e.getStatus())
-//                .body(ApiResponse.error(e.getCode()));
-//    }
+    @ExceptionHandler(ServiceException.class)
+    public ResponseEntity<ApiResponse<Void>> handleServiceException(ServiceException e) {
+        return ResponseEntity
+                .status(e.getStatus())
+                .body(ApiResponse.error(e.getStatus(), e.getMessage()));
+    }
 }
