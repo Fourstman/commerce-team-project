@@ -1,6 +1,5 @@
 package com.commerceteamproject.review.controller;
 
-import com.commerceteamproject.admin.dto.AdminDeleteRequest;
 import com.commerceteamproject.admin.dto.SessionAdmin;
 import com.commerceteamproject.admin.entity.AdminRole;
 import com.commerceteamproject.common.dto.ApiResponse;
@@ -14,6 +13,7 @@ import com.commerceteamproject.review.service.ReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -24,7 +24,7 @@ public class ReviewController {
 
     // 리뷰 리스트 조회
     @GetMapping
-    public ApiResponse<PageResponse<ReviewGetResponse>> getReviews(
+    public ResponseEntity<ApiResponse<PageResponse<ReviewGetResponse>>> getReviews(
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin,
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) Integer rating,
@@ -36,36 +36,36 @@ public class ReviewController {
         validateAdmin(sessionAdmin);
         PageResponse<ReviewGetResponse> reviews =
                 reviewService.getReviews(keyword, rating, page, size, sortBy, direction);
-        return ApiResponse.success(HttpStatus.OK, "리뷰 조회 성공", reviews);
+        return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, "리뷰 조회 성공", reviews));
     }
 
     // 리뷰 상세 조회(현재 : dto/TestReviewOne)
     // 상위 경로 지정 : 관리자 -> 리뷰
     @GetMapping("/{reviewId}")
-    public ApiResponse<ReviewGetResponse> getReview(
+    public ResponseEntity<ApiResponse<ReviewGetResponse>> getReview(
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin,
             @PathVariable Long reviewId
     ) {
         validateAdmin(sessionAdmin);
-        return ApiResponse.success(HttpStatus.OK, "리뷰 상세 조회 성공", reviewService.getReview(reviewId));
+        return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, "리뷰 상세 조회 성공", reviewService.getReview(reviewId)));
 
     }
 
     // 리뷰 삭제
     @DeleteMapping("/{reviewId}")
-    public ApiResponse<Void> delete(
+    public ResponseEntity<ApiResponse<Void>> delete(
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin,
             @PathVariable Long reviewId
     ) {
         validateAdmin(sessionAdmin);
         reviewService.delete(reviewId);
-        return ApiResponse.success(HttpStatus.OK, "리뷰 삭제 성공", null);
+        return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, "리뷰 삭제 성공", null));
     }
 
     // 테스트용 리뷰 생성 코드
     @PostMapping
-    public ApiResponse<ReviewCreateResponse> createReview(@Valid @RequestBody ReviewCreateRequest request) {
-        return ApiResponse.success(HttpStatus.CREATED, "리뷰 생성 성공", reviewService.createReview(request));
+    public ResponseEntity<ApiResponse<ReviewCreateResponse>> createReview(@Valid @RequestBody ReviewCreateRequest request) {
+        return ResponseEntity.ok(ApiResponse.success(HttpStatus.CREATED, "리뷰 생성 성공", reviewService.createReview(request)));
     }
 
     // 관리자 조건
