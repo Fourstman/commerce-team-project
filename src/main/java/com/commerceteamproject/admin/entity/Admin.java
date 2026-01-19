@@ -1,5 +1,6 @@
 package com.commerceteamproject.admin.entity;
 
+import com.commerceteamproject.common.exception.AdminStatusNotAllowedException;
 import com.commerceteamproject.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -7,6 +8,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.SQLRestriction;
+import com.commerceteamproject.admin.exception.UnauthorizedException;
 
 import java.time.LocalDateTime;
 
@@ -82,7 +84,7 @@ public class Admin extends BaseEntity {
     // 관리자 승인
     public void approve() {
         if (this.adminStatus != AdminStatus.PENDING) {
-            throw new IllegalStateException("승인 대기 상태의 관리자만 승인할 수 있습니다.");
+            throw new UnauthorizedException("승인 대기 상태의 관리자만 승인할 수 있습니다.");
         }
 
         this.adminStatus = AdminStatus.ACTIVATION;
@@ -92,11 +94,11 @@ public class Admin extends BaseEntity {
     // 관리자 거부
     public void reject(String reason) {
         if (this.adminStatus != AdminStatus.PENDING) {
-            throw new IllegalStateException("승인 대기 상태의 관리자만 거부할 수 있습니다.");
+            throw new UnauthorizedException("승인 대기 상태의 관리자만 거부할 수 있습니다.");
         }
 
         if (reason == null || reason.trim().isEmpty()) {
-            throw new IllegalStateException("거부 사유는 필수입니다.");
+            throw new AdminStatusNotAllowedException("거부 사유는 필수입니다.");
         }
 
         this.adminStatus = AdminStatus.REJECTION;
