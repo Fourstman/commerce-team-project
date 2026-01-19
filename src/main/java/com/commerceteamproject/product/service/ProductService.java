@@ -11,6 +11,7 @@ import com.commerceteamproject.product.entity.Product;
 import com.commerceteamproject.product.entity.ProductCategory;
 import com.commerceteamproject.product.entity.ProductStatus;
 import com.commerceteamproject.product.exception.ProductNotFoundException;
+import com.commerceteamproject.product.exception.ProductStatusNotAllowedException;
 import com.commerceteamproject.product.repository.ProductRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -29,6 +30,7 @@ public class ProductService {
     private final ProductRepository productRepository;
     private final AdminRepository adminRepository;
 
+    // 상품 생성
     @Transactional
     public ProductCreateResponse save(SessionAdmin sessionAdmin, ProductCreateRequest request) {
         Admin admin = adminRepository.findById(sessionAdmin.getId()).orElseThrow(
@@ -56,6 +58,7 @@ public class ProductService {
 
     }
 
+    // 상품 리스트 조회
     @Transactional(readOnly = true)
     public PageResponse<ProductListItemResponse> getProducts(
             String keyword, ProductCategory productCategory, ProductStatus productStatus, Pageable pageable) {
@@ -82,6 +85,7 @@ public class ProductService {
         return new PageResponse<>(page);
     }
 
+    // 상품 상세 조회
     @Transactional(readOnly = true)
     public ProductGetResponse getById(Long productId) {
         Product product = productRepository.findById(productId).orElseThrow(
@@ -99,6 +103,7 @@ public class ProductService {
         );
     }
 
+    // 상품 정보 수정
     @Transactional
     public ProductUpdateResponse updateProductInfo(
             Long productId,
@@ -121,6 +126,7 @@ public class ProductService {
                 product.getPrice());
     }
 
+    // 상품 재고 변경
     @Transactional
     public ProductStockUpdateResponse updateStock(Long productId, ProductStockUpdateRequest request
     ) {
@@ -144,6 +150,26 @@ public class ProductService {
         );
     }
 
+    // 상품 상태 변경
+    @Transactional
+    public ProductStatusUpdateResponse updateStatus(Long productId, ProductStatusUpdateRequest request
+    ) {
+        Product product = productRepository.findById(productId)
+                .orElseThrow(() -> new ProductNotFoundException("없는 상품입니다."));
+
+        if (request.getStatus() == ProductStatus.ON_SALE && product.getStock() == 0) {
+            throw new ProductStatusNotAllowedException("상품의 재고가 없습니다.");
+        }
+
+        product.changeStatus(request.getStatus());
+
+        return new ProductStatusUpdateResponse(
+                product.getId(),
+                product.getStatus()
+        );
+    }
+
+    // 상품 삭제
     @Transactional
     public void delete(Long productsId) {
         boolean existence = productRepository.existsById(productsId);
