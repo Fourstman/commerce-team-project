@@ -1,10 +1,7 @@
 package com.commerceteamproject.product.dto;
 
-import com.commerceteamproject.product.entity.ProductCategory;
 import com.commerceteamproject.product.entity.ProductStatus;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
 import lombok.Getter;
 
 @Getter
