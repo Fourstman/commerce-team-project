@@ -37,7 +37,8 @@ public class ProductController {
         }
     }
 
-    @PostMapping // 상품 생성
+    // 상품 생성
+    @PostMapping
     public ResponseEntity<ApiResponse<ProductCreateResponse>> create(
             @Valid @RequestBody ProductCreateRequest request,
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin
@@ -48,6 +49,7 @@ public class ProductController {
                 .body(ApiResponse.success(HttpStatus.CREATED, "상품이 생성되었습니다.", product));
     }
 
+    // 상품 리스트 조회
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<ProductListItemResponse>>> getProducts(
             @RequestParam(required = false)String keyword,
@@ -63,7 +65,8 @@ public class ProductController {
         return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, "상품 목록 조회에 성공했습니다.", result));
     }
 
-    @GetMapping("/{productId}") // 상품 단건 조회
+    // 상품 상세 조회
+    @GetMapping("/{productId}")
     public ResponseEntity<ApiResponse<ProductGetResponse>> getById(
             @PathVariable Long productId,
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin
@@ -75,8 +78,8 @@ public class ProductController {
         return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, "상품 조회에 성공했습니다.", result));
     }
 
-
-    @PutMapping("/{productId}") // 상품 수정
+    // 상품 정보 수정
+    @PutMapping("/{productId}")
     public ResponseEntity<ApiResponse<ProductUpdateResponse>> updateProductInfo(
             @Valid @RequestBody ProductUpdateRequest request,
             @PathVariable Long productId,
@@ -87,10 +90,11 @@ public class ProductController {
         return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, "상품 정보가 수정되었습니다.", result));
     }
 
+    // 상품 재고 변경
     @PatchMapping("/{productId}/stock")
     public ResponseEntity<ApiResponse<ProductStockUpdateResponse>> updateStock(
             @PathVariable Long productId,
-            @RequestBody ProductStockUpdateRequest request,
+            @Valid @RequestBody ProductStockUpdateRequest request,
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin
     ) {
         validateAdmin(sessionAdmin);
@@ -98,7 +102,20 @@ public class ProductController {
         return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, "상품 재고가 수정되었습니다.", result));
     }
 
-    @DeleteMapping("/{productId}") // 상품 삭제
+    // 상품 상태 변경
+    @PatchMapping("/{productId}/status")
+    public ResponseEntity<ApiResponse<ProductStatusUpdateResponse>> updateStatus(
+            @PathVariable Long productId,
+            @Valid @RequestBody ProductStatusUpdateRequest request,
+            @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin
+    ) {
+        validateAdmin(sessionAdmin);
+        ProductStatusUpdateResponse result = productService.updateStatus(productId, request);
+        return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, "상품 상태가 수정되었습니다.", result));
+    }
+
+    // 상품 삭제
+    @DeleteMapping("/{productId}")
     public ResponseEntity<ApiResponse<Void>> delete(
             @PathVariable Long productId,
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin sessionAdmin
@@ -108,5 +125,4 @@ public class ProductController {
 
         return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, "상품이 삭제 되었습니다", null));
     }
-
 }
