@@ -1,9 +1,7 @@
 package com.commerceteamproject.review.entity;
 
 import com.commerceteamproject.common.entity.BaseEntity;
-import com.commerceteamproject.customer.entity.Customer;
 import com.commerceteamproject.order.entity.Order;
-import com.commerceteamproject.product.entity.Product;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -40,12 +38,4 @@ public class Review extends BaseEntity {
         this.rating = rating;
         this.content = content;
     }
-    // review.getOrder().getOrderNumber();           // 주문번호
-    // review.getOrder().getCustomer().getId();      // 고유 식별자
-    // review.getOrder().getCustomer().getName();    // 고객명
-    // review.getOrder().getCustomer().getEmail();   // 고객 이메일
-    // review.getOrder().getProduct().getName();     // 상품명
-    // review.getRating();                           // 평점
-    // review.getContent();                          // 리뷰 내용
-    // review.getCreatedAt();                        // 작성일(BaseEntity)
 }

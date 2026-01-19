@@ -8,10 +8,7 @@ import com.commerceteamproject.admin.exception.*;
 import com.commerceteamproject.admin.repository.AdminRepository;
 import com.commerceteamproject.common.dto.PageResponse;
 import com.commerceteamproject.admin.exception.AdminStatusNotAllowedException;
-import com.commerceteamproject.common.exception.LoginRequiredException;
 import com.commerceteamproject.config.PasswordEncoder;
-import com.commerceteamproject.review.dto.ReviewGetResponse;
-import com.commerceteamproject.review.entity.Review;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,7 +18,6 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -35,8 +31,6 @@ public class AdminService {
         boolean existence = adminRepository.existsByEmail(request.getEmail());
         if (existence) {
             throw new DuplicateEmailException("중복된 이메일이 존재합니다.");
-        } else if (request.getAdminRole() == null) {
-            throw new AdminRoleIsNullException("관리자 역할을 선택해주세요.");
         }
         String encodedPassword = passwordEncoder.encode(request.getPassword());
         Admin admin = new Admin(
