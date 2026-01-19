@@ -48,7 +48,7 @@ public class AdminController {
             throw new LoginRequiredException("로그인이 필요합니다.");
         }
         session.invalidate();
-        return ResponseEntity.status(HttpStatus.NO_CONTENT)
+        return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.success(HttpStatus.OK, "성공적으로 로그아웃 되었습니다", null));
     }
 // ============================================================ //
