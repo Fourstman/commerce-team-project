@@ -44,7 +44,7 @@ public class OrderController {
     public ResponseEntity<ApiResponse<PageResponse<GetOrderListResponse>>> findOrders(
             @RequestParam(required = false)String keyword,
             @RequestParam(required = false)OrderStatus status,
-            @PageableDefault(page = 0, size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
+            @PageableDefault(page = 1, size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
             @SessionAttribute(name = "loginAdmin", required = false)SessionAdmin sessionAdmin) {
         if (sessionAdmin == null) {
             throw new LoginRequiredException("로그인이 필요합니다.");

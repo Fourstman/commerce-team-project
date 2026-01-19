@@ -15,6 +15,7 @@ import com.commerceteamproject.product.repository.ProductRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,8 +65,10 @@ public class ProductService {
                 throw new InvalidParameterException("잘못된 정렬 기준입니다.");
             }
         });
+        Pageable basePageable = PageRequest.of(
+                pageable.getPageNumber() - 1, pageable.getPageSize(), pageable.getSort());
         Page<Product> products = productRepository.findByKeywordAndStatus(
-                keyword, productCategory, productStatus, pageable);
+                keyword, productCategory, productStatus, basePageable);
         Page<ProductListItemResponse> page = products.map(p -> new ProductListItemResponse(
                 p.getId(),
                 p.getName(),

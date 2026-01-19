@@ -11,6 +11,7 @@ import com.commerceteamproject.customer.repository.CustomerRepository;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -32,11 +33,13 @@ public class CustomerService {
         if (!CustomerSortBy.exists(property)) {
             throw new InvalidParameterException("잘못된 정렬 기준입니다.");
         }
+        Pageable basePageable = PageRequest.of(
+                pageable.getPageNumber() - 1, pageable.getPageSize(), pageable.getSort());
 
         // 키워드가 있으면 키워드가 포함된 이름/이메일 필터링
         // 상태가 있으면 상태 기준으로 필터링
         // 키워드/상태가 없으면 전체 조회
-        Page<Customer> customers = customerRepository.findByKeywordAndStatus(keyword, status, pageable);
+        Page<Customer> customers = customerRepository.findByKeywordAndStatus(keyword, status, basePageable);
 
         Page<GetCustomerListResponse> page = customers.map(customer -> new GetCustomerListResponse(
                 customer.getId(),
