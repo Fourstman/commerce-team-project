@@ -13,6 +13,7 @@ import com.commerceteamproject.review.dto.ReviewGetResponse;
 import com.commerceteamproject.review.service.ReviewService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -35,7 +36,7 @@ public class ReviewController {
         validateAdmin(sessionAdmin);
         PageResponse<ReviewGetResponse> reviews =
                 reviewService.getReviews(keyword, rating, page, size, sortBy, direction);
-        return ApiResponse.success(reviews);
+        return ApiResponse.success(HttpStatus.OK, "리뷰 조회 성공", reviews);
     }
 
     // 리뷰 상세 조회(현재 : dto/TestReviewOne)
@@ -46,7 +47,8 @@ public class ReviewController {
             @PathVariable Long reviewId
     ) {
         validateAdmin(sessionAdmin);
-        return ApiResponse.success(reviewService.getReview(reviewId));
+        return ApiResponse.success(HttpStatus.OK, "리뷰 상세 조회 성공", reviewService.getReview(reviewId));
+
     }
 
     // 리뷰 삭제
@@ -57,13 +59,13 @@ public class ReviewController {
     ) {
         validateAdmin(sessionAdmin);
         reviewService.delete(reviewId);
-        return ApiResponse.success(null);
+        return ApiResponse.success(HttpStatus.OK, "리뷰 삭제 성공", null);
     }
 
     // 테스트용 리뷰 생성 코드
     @PostMapping
     public ApiResponse<ReviewCreateResponse> createReview(@Valid @RequestBody ReviewCreateRequest request) {
-        return ApiResponse.success(reviewService.createReview(request));
+        return ApiResponse.success(HttpStatus.CREATED, "리뷰 생성 성공", reviewService.createReview(request));
     }
 
     // 관리자 조건
