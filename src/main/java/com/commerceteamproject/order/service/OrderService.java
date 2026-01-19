@@ -166,7 +166,5 @@ public class OrderService {
         if (order.getProduct().getStatus() == ProductStatus.SOLD_OUT) {
             order.getProduct().changeStatus(ProductStatus.ON_SALE);
         }
-        // 주문은 삭제되도 데이터 조회 가능
-        orderRepository.deleteById(orderId);
     }
 }
