@@ -65,7 +65,7 @@ public class AdminController {
             @RequestParam(defaultValue = "createdAt") String sortBy,
             @RequestParam(defaultValue = "desc") String direction
     ) {
-        SUPERvalidateAdmin(loginAdmin);
+        superValidateAdmin(loginAdmin);
         PageResponse<AdminListItemResponse> adminsList = adminService.findAdmins(
                 keyword, adminRole, adminStatus, page, size, sortBy, direction
         );
@@ -80,7 +80,7 @@ public class AdminController {
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin loginAdmin,
             @PathVariable Long adminId
     ){
-        SUPERvalidateAdmin(loginAdmin);
+        superValidateAdmin(loginAdmin);
         AdminGetResponse result = adminService.findOne(adminId);
         return ResponseEntity.status(HttpStatus.OK)
                 .body(ApiResponse.success(HttpStatus.OK, "관리자 상세 조회에 성공했습니다", result));
@@ -117,7 +117,7 @@ public class AdminController {
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin loginAdmin,
             HttpSession httpSession
     ) {
-        SUPERvalidateAdmin(loginAdmin);
+        superValidateAdmin(loginAdmin);
         AdminStatusUpdateResponse result = adminService.changeStatus(adminId, request);
 
         // 비활성화 시 세션 무효화
@@ -138,7 +138,7 @@ public class AdminController {
     ) {
 
         // 일반 관리자(RUN, CS)는 거부 권한 없음
-        SUPERvalidateAdmin(loginAdmin);
+        superValidateAdmin(loginAdmin);
         AdminApproveResponse result = adminService.approve(adminId);
         return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, "관리자를 승인했습니다", result));
     }
@@ -152,7 +152,7 @@ public class AdminController {
     ) {
 
         // 일반 관리자(RUN, CS)는 거부 권한 없음
-        SUPERvalidateAdmin(loginAdmin);
+        superValidateAdmin(loginAdmin);
 
         AdminRejectResponse result = adminService.reject(adminId, request);
         return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, "관리자를 거부했습니다", result));
@@ -166,7 +166,7 @@ public class AdminController {
             @SessionAttribute(name = "loginAdmin", required = false) SessionAdmin loginAdmin,
             HttpSession httpSession
     ) {
-        SUPERvalidateAdmin(loginAdmin);
+        superValidateAdmin(loginAdmin);
         adminService.delete(adminId);
         httpSession.invalidate(); // 삭제 후 세션 무효화
         return ResponseEntity.ok(ApiResponse.success(HttpStatus.OK, "관리자를 삭제했습니다.", null));
@@ -212,17 +212,8 @@ public class AdminController {
                 .body(ApiResponse.success(HttpStatus.OK, "관리자 프로필을 수정했습니다.", result));
     }
 
-    // CS 제외 관리자 조건
-    private void CSNotvalidateAdmin(SessionAdmin sessionAdmin) {
-        if (sessionAdmin == null) {
-            throw new LoginRequiredException("로그인이 필요합니다.");
-        }
-        if (sessionAdmin.getAdminRole() == AdminRole.CS) {
-            throw new AccessDeniedException("권한이 없습니다.");
-        }
-    }
     // SUPER 관리자 조건
-    private void SUPERvalidateAdmin(SessionAdmin sessionAdmin) {
+    private void superValidateAdmin(SessionAdmin sessionAdmin) {
         if (sessionAdmin == null) {
             throw new LoginRequiredException("로그인이 필요합니다.");
         }
